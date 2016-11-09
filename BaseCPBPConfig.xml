@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<CPBPConfig version="1.0">
+	<!-- skeleton and world - eventually handle vehicle skeleton -->
+	<skeleton>
+		<skelFile filename="../apps/particleBeliefProp/fullbodyPBP.skel" type="humanoid"></skelFile>
+		<idxInWorld>1</idxInWorld>
+		<initConfig filename="../apps/particleBeliefProp/CPBP_InitSkelConfig.xml"></initConfig>
+	</skeleton>
+	<!-- params -->
+	<params>
+	<paramsFile base_filename="../apps/particleBeliefProp/BaseCPBP_ParamsConfig.xml" 
+		cust_filename="../apps/particleBeliefProp/CPBP_ParamsConfig.xml" />
+	</params>
+	<!-- UI -->
+	<uiConfig>
+		<!-- need a page for main window buttons, cpbp, and 1 page per goal -->
+		<uiPages>3</uiPages>	
+		<!-- main window UI -->
+		<uiPage filename="../apps/particleBeliefProp/CPBPSimCntrl_UIConfig.xml">
+			<isGoal>0</isGoal>
+		</uiPage>
+		<!-- CPBP Main UI -->
+		<uiPage filename="../apps/particleBeliefProp/CPBPMain_UIConfig.xml">
+			<isGoal>0</isGoal>
+		</uiPage>
+		<!-- goals UI -->
+		<uiPage filename="../apps/particleBeliefProp/CPBP_GoalsConfig.xml">
+			<isGoal>1</isGoal>
+		</uiPage>
+
+
+	</uiConfig>
+
+</CPBPConfig>
+<!-- Template to build CPBP xml configuration file to store UI and Params -- all file names relative to dart data path -->

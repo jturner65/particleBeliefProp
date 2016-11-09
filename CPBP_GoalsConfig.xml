@@ -1,0 +1,6 @@
+<!-- List out all subgoals for a particular configuration -->
+<?xml version="1.0" ?>
+<CPBP_GoalsConfig version="1.0" name="BalanceConfig" numGoals = "10">
+	<subGoalFile filename = "" />
+
+</CPBP_GoalsConfig>

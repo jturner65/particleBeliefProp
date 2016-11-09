@@ -1,0 +1,32 @@
+<!-- Template to build CPBP Params xml configuration file -->
+<?xml version="1.0" ?>
+<CPBP_InitSkelConfig version="1.0">	
+	<numConfigDofs>9</numConfigDofs>
+	<dofConfig>
+		<idx>1</idx>
+		<val>-0.2</val>
+	</dofConfig>	<dofConfig>
+		<idx>4</idx>
+		<val>0.05</val>
+	</dofConfig>		<dofConfig>
+		<idx>6</idx>
+		<val>0.15</val>
+	</dofConfig>			<dofConfig>
+		<idx>9</idx>
+		<val>-0.4</val>
+	</dofConfig>		<dofConfig>
+		<idx>10</idx>
+		<val>0.25</val>
+	</dofConfig>		<dofConfig>
+		<idx>13</idx>
+		<val>0.15</val>
+	</dofConfig>		<dofConfig>
+		<idx>16</idx>
+		<val>-0.4</val>
+	</dofConfig>			<dofConfig>
+		<idx>17</idx>
+		<val>0.25</val>
+	</dofConfig>		<dofConfig>
+		<idx>21</idx>
+		<val>0.0</val>
+	</dofConfig></CPBP_InitSkelConfig>

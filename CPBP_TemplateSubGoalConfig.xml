@@ -1,0 +1,38 @@
+<!-- template configuration for a single subgoal for CPBP -->
+<CPBP_SubGoal version="1.0" name="BalanceConfig">
+<!--	pattern : 	initSubGoal(idxCOMCOP, 0, .005, false, true, "COM-COP Proj");-->
+	<parameter>
+		<name>mean</name>
+		<val>0</val>   
+	</parameter>
+	<parameter>
+		<name>std</name>
+		<val>.005</val>   
+	</parameter>
+	<parameter>
+		<name>initState</name>
+		<val>FALSE</val>   
+	</parameter>
+	<parameter>
+		<name>useResInVar</name>
+		<val>TRUE</val>   
+	</parameter>
+	<parameter>
+		<name>name</name>
+		<val>Sub Goal Name</val>   
+	</parameter>
+	
+<!-- Calculation Parameters -->
+	<parameter>
+		<name>costCalcType</name> <!-- l1 or l2 meaning sq cost or lin cost - sets function pointer in subgoal obj -->
+		<val>l1</val>   
+	</parameter>
+	<parameter>
+		<name>costCalcFunction</name> <!-- type of calculation - dot prod, vec diff norm, proj, scalar comp,  -->
+		<val>l1</val>   
+	</parameter>
+	
+<!-- UI Display  Parameters -->
+	
+
+</CPBP_SubGoal>
