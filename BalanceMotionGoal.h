@@ -46,7 +46,7 @@ namespace cPBPropApp {
 	//the goal is to stay balanced
 	class BalanceMotionGoal : public MotionGoal {
 	public:
-		BalanceMotionGoal(int _numSubG, const vector<int>& _ubRbIdx);
+		BalanceMotionGoal(int _numSubG, const std::vector<int>& _ubRbIdx);
 		virtual ~BalanceMotionGoal() {}
 
 		virtual void init();
@@ -62,8 +62,8 @@ namespace cPBPropApp {
 
 		virtual void resetValues(bool sendToCntxts);
 		virtual void getValsFromUI();
-		virtual vector<double> accumulateVals();
-		virtual void distributeVals(vector<double>& vals);
+		virtual std::vector<double> accumulateVals();
+		virtual void distributeVals(std::vector<double>& vals);
 		virtual void resetUIWithDefVals();
 		virtual void saveUIVals();
 		//event handler for UI components related to this class

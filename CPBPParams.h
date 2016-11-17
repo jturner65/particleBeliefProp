@@ -47,7 +47,6 @@
 #include "dart/utils/Parser.h"
 #include <boost/algorithm/string.hpp>
 
-using namespace std;
 namespace cPBPropApp {
 
 	//this class handles the basic hyperparams for c-pbp.  an instance is held in a shared pointer whose primary owner is the CPBPHandler instance, and is shared with all sim cntxts
@@ -65,8 +64,8 @@ namespace cPBPropApp {
 		}
 		void setPlanHorizAndFwdTS(double _ph, double _delT);
 
-		vector<double> accumulateVals();
-		void distributeVals(vector<double>& vals);
+		std::vector<double> accumulateVals();
+		void distributeVals(std::vector<double>& vals);
 		void setDefaultVals();
 		void setCurrentValsAsDefault();
 		void setParamValFromXMLStr(const std::string& _name, const std::string& s);// , tinyxml2::XMLElement* _parentElement);
@@ -77,9 +76,9 @@ namespace cPBPropApp {
 		friend std::ostream& operator<<(std::ostream& out, CPBPParams& cpbp);
 
 	public:
-		vector<double> defaultVals;
-		vector<double>lowEffortSds, highEffortSds, lowEffortFMax, highEffortFMax;
-		vector<int> stateRBIdxs, upperBodyRBIdxs;
+		std::vector<double> defaultVals;
+		std::vector<double>lowEffortSds, highEffortSds, lowEffortFMax, highEffortFMax;
+		std::vector<int> stateRBIdxs, upperBodyRBIdxs;
 		std::string skelFileName, skelType;													//FULL path to skel (including DART data path, if used; skeleton type	
 
 		const int pelvisRBIdx = 0, lftHeelRBIdx = 3, rtHeelRBIdx = 7, headRBIdx = 11, lftToeRBIdx = 4, rtToeRBIdx = 8, lftHandRBIdx = 15, rtHandRBIdx = 19;	//skeleton params

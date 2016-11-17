@@ -54,7 +54,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
-using namespace std;
+
 using namespace AaltoGames;
 
 namespace dart {
@@ -169,12 +169,12 @@ namespace cPBPropApp {
 		void setSkelServoJoint();
 
 		inline Eigen::Vector3d getRBPos(int idx) { return nodes[idx]->getCOM(); }
-		//call at the end of every prediction step, to build display string of debug results
-		string debugPidxOut();
-		string debugCstOut();
-		inline string buildStrFromFloat(double val, const char* fmt ) {
+		//call at the end of every prediction step, to build display std::string of debug results
+		std::string debugPidxOut();
+		std::string debugCstOut();
+		inline std::string buildStrFromFloat(double val, const char* fmt ) {
 			char buf[MAX_BUF];
-			stringstream ss;
+			std::stringstream ss;
 			sprintf(buf, fmt, val);
 			ss << buf;
 			return ss.str();// label = ss.str();
@@ -269,13 +269,13 @@ namespace cPBPropApp {
 			dest.penetrationDepth = src.penetrationDepth;
 		}
 
-		std::string buildStrFromEigenXd(const Eigen::Ref<const Eigen::VectorXd>& vec) { int sz = vec.size(); stringstream ss; for (int i = 0; i < sz - 1; ++i) { ss << buildStrFromFloat(vec(i), "%.8f") << ","; }ss << buildStrFromFloat(vec(sz - 1), "%.8f");	return ss.str(); }
+		std::string buildStrFromEigenXd(const Eigen::Ref<const Eigen::VectorXd>& vec) { int sz = vec.size(); std::stringstream ss; for (int i = 0; i < sz - 1; ++i) { ss << buildStrFromFloat(vec(i), "%.8f") << ","; }ss << buildStrFromFloat(vec(sz - 1), "%.8f");	return ss.str(); }
 		std::string buildStateStr_Debug(const Eigen::Ref<const Eigen::VectorXd>& vec) {
 			int sz = vec.size(), dofSize = dofNames.size();
-			stringstream ss;
-			for (int i = 0; i < dofSize; ++i) { ss << i << ":" << dofNames[i] << " pos : " << vec(i) << endl; }
-			ss << endl;
-			for (int i = 0; i < dofSize; ++i) { ss << i << ":" << dofNames[i] << " vel : " << vec(i + dofSize) << endl; }
+			std::stringstream ss;
+			for (int i = 0; i < dofSize; ++i) { ss << i << ":" << dofNames[i] << " pos : " << vec(i) << "\n"; }
+			ss << "\n";
+			for (int i = 0; i < dofSize; ++i) { ss << i << ":" << dofNames[i] << " vel : " << vec(i + dofSize) << "\n"; }
 			return ss.str();
 		}
 

@@ -36,7 +36,6 @@
 
 #include "CPBPParams.h"
 
-using namespace std;
 using namespace Eigen;
 
 namespace cPBPropApp {
@@ -56,7 +55,7 @@ namespace cPBPropApp {
 		invDelTNumStpsPerThd(0), maxCntlVal(4.188790204786391), motorFmax(100), torsoMinFMax(20),legsMinFMax(20), armsMinFMax(1),
 		numFwdTimeSteps(0), idxInWorld(1), numSamples(36), numCntrlFlim(5), numStateBodies(6), numSimFwdStepsPerThd(1), flags(numFlags, false)
 	{
-		cout << "CPBP params ctor\n";
+		std::cout << "CPBP params ctor\n";
 		invDelTNumStpsPerThd = 1.0 / (deltaT*numSimFwdStepsPerThd);						//precalced per-fwdPrediction iteration constant - multiplied on pose prior mean
 		for (int i = 0; i < numFlags; ++i) {flags[i] = false;}
 		
@@ -121,7 +120,8 @@ namespace cPBPropApp {
 		if (_name.compare("torsoMinFMax") == 0) { torsoMinFMax = stod(s);        return; }
 		if (_name.compare("legsMinFMax") == 0) { legsMinFMax = stod(s);        return; }
 		if (_name.compare("armsMinFMax") == 0) { armsMinFMax = stod(s);        return; }
-
+		std::string sDest(s);
+		std::transform(s.begin(), s.end(), sDest.begin(), ::toupper);
 		if (_name.compare("useGBP") == 0) { flags[IDX_useGBP] = (s.compare("TRUE") == 0 ? true : false);        return; }
 		if (_name.compare("useVelMtr") == 0) { flags[IDX_useVelMtr] = (s.compare("TRUE") == 0 ? true : false);    return; }
 		if (_name.compare("useJerkCost") == 0) { flags[IDX_useJerkCost] = (s.compare("TRUE") == 0 ? true : false);     return; }
@@ -176,8 +176,8 @@ namespace cPBPropApp {
 		invDelTNumStpsPerThd = 1.0 / (deltaT*numSimFwdStepsPerThd);						//precalced per-fwdPrediction iteration constant - multiplied on pose prior mean
 	}
 
-	vector<double> CPBPParams::accumulateVals() {		//grab all locals that are modifiable by UI or used elsewhere
-		vector<double> res;
+	std::vector<double> CPBPParams::accumulateVals() {		//grab all locals that are modifiable by UI or used elsewhere
+		std::vector<double> res;
 		int idx = 0, lIdx = 0, hIdx = 0, lfIdx = 0, hfIdx = 0;
 		res.push_back(planHorizonSec);				res.push_back(deltaT);
 
@@ -200,7 +200,7 @@ namespace cPBPropApp {
 		return res;
 	}
 
-	void CPBPParams::distributeVals(vector<double>& vals) {//copy all UI values to their appropriate lcl variables (from UI or file)
+	void CPBPParams::distributeVals(std::vector<double>& vals) {//copy all UI values to their appropriate lcl variables (from UI or file)
 		int idx = 0, lIdx = 0, hIdx = 0, lfIdx = 0, hfIdx = 0;
 		setPlanHorizAndFwdTS(defaultVals[0], defaultVals[1]);// - dont' allow UI to change these values for now - require reiniting of cpbp setPlanHorizAndFwdTS(vals[idx++], vals[idx++]);//can't change this value without re-init of CPBP algorithm
 		idx += 2;

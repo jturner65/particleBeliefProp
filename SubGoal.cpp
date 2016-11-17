@@ -43,9 +43,9 @@
 namespace cPBPropApp {
 
 
-	void SubGoal::buildUI(int idx, int i, string label, int type, vector<float>& vals, vector<int>& objType, vector<string>& objLabels, vector<vector<int>>& objXY_WH, vector<vector<float>>& objClr, vector<float>& dims) {
-		stringstream ss;
-		string sldrNames[3] = { string("Weight : "), string("Target Val : "), string("Mult : ") };			//main named buttons
+	void SubGoal::buildUI(int idx, int i, std::string label, int type, std::vector<float>& vals, std::vector<int>& objType, std::vector<std::string>& objLabels, std::vector<std::vector<int>>& objXY_WH, std::vector<std::vector<float>>& objClr, std::vector<float>& dims) {
+		std::stringstream ss;
+		std::string sldrNames[3] = { std::string("Weight : "), std::string("Target Val : "), std::string("Mult : ") };			//main named buttons
 		//dims[0] = sliderLen;
 		//dims[1] = sliderWide;
 		//dims[2] = widBuf;
@@ -61,18 +61,18 @@ namespace cPBPropApp {
 	
 		float widBufMult = dims[2] * i;
 		ss.str("");		ss << "Enable";
-		vector<float> vb = { 0, widBufMult, dims[0], dims[0], .75f, .75f, .75f, 1 };
+		std::vector<float> vb = { 0, widBufMult, dims[0], dims[0], .75f, .75f, .75f, 1 };
 		UI->initUIObj(idx++, ss.str(), 0, vb, objType, objLabels, objXY_WH, objClr);
 		ss.str("");		ss << name << " cost : ";
-		vector<float> vCap = { dims[5], dims[7] + widBufMult, dims[3], dims[3], .25f, .25f, .25f, 1 };
+		std::vector<float> vCap = { dims[5], dims[7] + widBufMult, dims[3], dims[3], .25f, .25f, .25f, 1 };
 		UI->initUIObj(idx++, ss.str(), 2, vCap, objType, objLabels, objXY_WH, objClr);
 
 		for (int j = 0; j < 3; ++j) {//3 sliders weight/tar val/mult
 			float multX = j * dims[4];
-			vector<float> v1 = { (multX)+dims[1], (widBufMult + dims[0]), dims[1], dims[0], .85f, .85f, .85f, 1 };		//sliderwide is width of thumb
+			std::vector<float> v1 = { (multX)+dims[1], (widBufMult + dims[0]), dims[1], dims[0], .85f, .85f, .85f, 1 };		//sliderwide is width of thumb
 			UI->initUIObj(idx++, "", 1, v1, objType, objLabels, objXY_WH, objClr);		//puts appropriate values in array
 			ss.str("");		ss << sldrNames[j];
-			vector<float> v2 = { (multX)+dims[1] + dims[1], (widBufMult + dims[10]) - dims[8], dims[3], dims[3], .25f, .25f, .25f, 1 };
+			std::vector<float> v2 = { (multX)+dims[1] + dims[1], (widBufMult + dims[10]) - dims[8], dims[3], dims[3], .25f, .25f, .25f, 1 };
 			UI->initUIObj(idx++, ss.str(), 2, v2, objType, objLabels, objXY_WH, objClr);
 		}
 	}

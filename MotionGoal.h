@@ -48,7 +48,7 @@ namespace cPBPropApp {
 	/// base class for goals of motion
 	class MotionGoal {
 	public:
-		MotionGoal(int _numSubG, const vector<int>& _ubRbIdx) : SM(0), name("MotionGoal"), restState(), targetState(), lowVarLvlCost(10), highVarLvlCost(400), 
+		MotionGoal(int _numSubG, const std::vector<int>& _ubRbIdx) : SM(0), name("MotionGoal"), restState(), targetState(), lowVarLvlCost(10), highVarLvlCost(400), 
 			numSubGoals(_numSubG), fullPoseSd(.1), UI(nullptr), rCOMHght(), rHipHght(), maxLegDist(.8), reachHandIDX(-1), reachHandTarget(0,0,0),
 			subGWts(), subGMean(), subGSds(), subGNames(), subGWtDivSds(), costMult(1),
 			rFootWdth(.187), upVec(0, 1, 0), rp_Up(0, 1, 0), rp_Fwd(1, 0, 0), rp_Rght(0, 0, 1),
@@ -94,10 +94,10 @@ namespace cPBPropApp {
 		}				//call at start of every forward sim
 
 		void setReachHand(int rhndIdx) { reachHandIDX = rhndIdx; }
-		void setReachTarget(const Eigen::Vector3d& rchTar) { reachHandTarget = rchTar; }
+		void setReachTarget(const Eigen::Ref<const Eigen::Vector3d>& rchTar) { reachHandTarget = rchTar; }
 		void resetReach() { reachHandIDX = -1; reachHandTarget << 0, 0, 0; }
 
-		void setFwdVec(const Eigen::Vector3d &fwd);
+		void setFwdVec(const Eigen::Ref<const Eigen::Vector3d>& fwd);
 		void setSMBool(int idx, bool val);
 		void setSMBools(std::vector<int>& idxs, std::vector<bool>& vals) { for (int i = 0; i < idxs.size(); ++i) { setSMBool(idxs[i], vals[i]); } }
 		virtual void setSubGFlag(int idx, bool val, bool useResInVar) = 0;
@@ -110,8 +110,8 @@ namespace cPBPropApp {
 		virtual void initUI() = 0;
 		virtual void resetValues(bool sendToCntxts);
 		virtual void getValsFromUI();
-		virtual vector<double> accumulateVals();
-		virtual void distributeVals(vector<double>& vals);
+		virtual std::vector<double> accumulateVals();
+		virtual void distributeVals(std::vector<double>& vals);
 		virtual void resetUIWithDefVals();
 		virtual void saveUIVals();
 		//event handler for UI components related to this class
@@ -134,7 +134,7 @@ namespace cPBPropApp {
 		}
 
 		//find closest point on segment between two points, with a buffer zone around the segment
-		Eigen::Vector3d clsPntOnSegWithBffr(const Eigen::Vector3d& pt, const Eigen::Vector3d& segP1, const Eigen::Vector3d& segP2, double bufferZone) {
+		Eigen::Vector3d clsPntOnSegWithBffr(const Eigen::Ref<const Eigen::Vector3d>& pt, const Eigen::Ref<const Eigen::Vector3d>& segP1, const Eigen::Ref<const Eigen::Vector3d>& segP2, double bufferZone) {
 			Eigen::Vector3d v = segP2 - segP1,
 				dir = v.normalized(),
 				middle = 0.5 * (segP1 + segP2);
@@ -152,7 +152,7 @@ namespace cPBPropApp {
 			double diff = (val - subGMean(idx));
 			double cost = subGWtDivSqSds(idx) * diff * diff;
 			if (isnan(cost)) {
-				cout << "Nan cost for eval " << subGNames[idx] << " with value : " << val << endl;			
+				std::cout << "Nan cost for eval " << subGNames[idx] << " with value : " << val << "\n";
 				cost = 100000000.0;// highVarLvlCost;
 			}
 			return cost;
@@ -162,7 +162,7 @@ namespace cPBPropApp {
 			//if (!subGFlags[idx]) { return 0; }
 			double cost = subGWtDivSds[idx]  * abs(val - subGMean(idx));
 			if (isnan(cost)) {
-				cout << "Nan cost for eval " << subGNames[idx] << " with value : " << val << endl;			
+				std::cout << "Nan cost for eval " << subGNames[idx] << " with value : " << val << "\n";
 				cost = 100000000.0;// highVarLvlCost;
 			}
 			return cost;
@@ -181,25 +181,25 @@ namespace cPBPropApp {
 			return varRes;
 		}
 
-		inline double calcProjSq(const Eigen::Vector3d& a, const Eigen::Vector3d& n) {
+		inline double calcProjSq(const Eigen::Ref<const Eigen::Vector3d>& a, const Eigen::Ref<const Eigen::Vector3d>& n) {
 			double res = (a.cross(n)).squaredNorm();
 			return res;
 		}//sqrd length of vector projected on the plane described by normal n
-		inline double calcProj(const Eigen::Vector3d& a, const Eigen::Vector3d& n) { return (a.cross(n)).norm(); }//sqrd length of vector projected on the plane described by normal n
-		inline double calcSqDist(const Eigen::Vector3d& a, const Eigen::Vector3d& b) { return (a - b).squaredNorm(); }
+		inline double calcProj(const Eigen::Ref<const Eigen::Vector3d>& a, const Eigen::Ref<const Eigen::Vector3d>& n) { return (a.cross(n)).norm(); }//sqrd length of vector projected on the plane described by normal n
+		inline double calcSqDist(const Eigen::Ref<const Eigen::Vector3d>& a, const Eigen::Ref<const Eigen::Vector3d>& b) { return (a - b).squaredNorm(); }
 		inline double errf(double val) { return val*val; }
 		inline double errv(Eigen::Vector3d& val) { return val.squaredNorm(); }
 		//recalculates the vector of pre-calculated weights over means, so that cost can be calculated as dot of wtdifsds with (calcVals - means)
 		void updateSubGWtMultSds(bool reDist);
 
-		inline string buildStrFromDbl(double val, const char* fmt = "%.4f") {
+		inline std::string buildStrFromDbl(double val, const char* fmt = "%.4f") {
 			char buf[MAX_BUF];
-			stringstream ss;
+			std::stringstream ss;
 			sprintf(buf, fmt, val);
 			ss << buf;
 			return ss.str();// label = ss.str();
 		}//buildLabel
-		std::string buildStrFromEigen3d(const Eigen::Ref<const Eigen::Vector3d>& vec) { stringstream ss;  ss << buildStrFromDbl(vec(0)) << "," << buildStrFromDbl(vec(1)) << "," << buildStrFromDbl(vec(2)); return ss.str(); }
+		std::string buildStrFromEigen3d(const Eigen::Ref<const Eigen::Vector3d>& vec) { std::stringstream ss;  ss << buildStrFromDbl(vec(0)) << "," << buildStrFromDbl(vec(1)) << "," << buildStrFromDbl(vec(2)); return ss.str(); }
 
 		friend std::ostream& operator<<(std::ostream& out, MotionGoal& goal);
 
@@ -253,7 +253,7 @@ namespace cPBPropApp {
 
 		std::shared_ptr<MyGuiHandler> UI;				//UI to enable modification of sim variables used by this motion goal 
 
-		vector<int> ubIdxs;								//idx's of upper body dofs
+		std::vector<int> ubIdxs;								//idx's of upper body dofs
 	};//MotionGoal
 }
 

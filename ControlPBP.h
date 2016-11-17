@@ -56,7 +56,7 @@ namespace AaltoGames
 
 		//returns the prior GMM for the given time step
 #ifndef SWIG
-		void getConditionalControlGMM(int timeStep, const Eigen::VectorXd &state, DiagonalGMM &dst);
+		void getConditionalControlGMM(int timeStep, const Eigen::Ref<const Eigen::VectorXd>&state, DiagonalGMM &dst);
 #endif
 		/*
 		Below, an interface for operation without callbacks. This is convenient for C# integration and custom multithreading. See InvPendulumTest.cpp for the usage.

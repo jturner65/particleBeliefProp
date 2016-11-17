@@ -7,7 +7,7 @@
 #include <time.h>
 #include "ClippedGaussianSampling.h"
 
-using namespace Eigen;
+//using namespace Eigen;
 static const bool useStateKernelsBwdFwd=true;
 
 namespace AaltoGames
@@ -173,7 +173,7 @@ namespace AaltoGames
 		}
 
 		//compute the forward message values and forward beliefs for each sample (forward belief = state potential * forward message from previous node
-		VectorXd stateDiff(nStateDimensions);
+		Eigen::VectorXd stateDiff(nStateDimensions);
 		for (int i=0; i<nSamples; i++)
 		{
 			if (step==0)
@@ -237,16 +237,16 @@ namespace AaltoGames
 		//Backward pass, NBP if a backwards transition function defined
 
 		startIteration(false, currentState);
-		static std::vector<VectorXd> sampleStates(nSamples);
-		static std::vector<VectorXd> nextSampleStates(nSamples);
+		static std::vector<Eigen::VectorXd> sampleStates(nSamples);
+		static std::vector<Eigen::VectorXd> nextSampleStates(nSamples);
 		for (int i=0; i<nSamples; i++)
 		{
 			if (sampleStates[i].rows()==0)
 				sampleStates[i].resize(nStateDimensions);
 			memcpy(&sampleStates[i][0],currentState,sizeof(double)*nStateDimensions);
 		}
-		static VectorXd control(nControlDimensions);
-		static VectorXd newState(nStateDimensions);
+		static Eigen::VectorXd control(nControlDimensions);
+		static Eigen::VectorXd newState(nStateDimensions);
 		for (int step=0; step<nSteps; step++)
 		{
 			startPlanningStep(step);
@@ -274,7 +274,7 @@ namespace AaltoGames
 	}
 
 
-	void ControlPBP::getConditionalControlGMM( int timeStep, const Eigen::VectorXd &state, DiagonalGMM &dst )
+	void ControlPBP::getConditionalControlGMM( int timeStep, const Eigen::Ref<const Eigen::VectorXd>&state, DiagonalGMM &dst )
 	{
 		__declspec(thread) static DiagonalGMM *tmp=NULL;
 		if (tmp==NULL)
@@ -350,7 +350,7 @@ namespace AaltoGames
 			marginals[nSteps][i].belief=marginals[nSteps][i].forwardBelief;
 			marginals[nSteps][i].bwdMessage = 1.0 / (double)nSamples;		//sum normalized to 1
 		}
-		VectorXd stateDiff(nStateDimensions);
+		Eigen::VectorXd stateDiff(nStateDimensions);
 		for (int step=nSteps-1; step>=0; step--){
 			double totalPropagated=0;
 			//first set backward messages to 0 to account for cases where resampling terminated the path and zero state kernel does not transfer any belief
@@ -527,7 +527,7 @@ namespace AaltoGames
 		nextStep=currentStep+1;
 
 		//Check for resampling
-		VectorXd weights(nSamples);
+		Eigen::VectorXd weights(nSamples);
 		for (int sample=0; sample<nSamples; sample++)
 		{
 			weights[sample]=marginals[currentStep][sample].forwardBelief;
@@ -665,7 +665,7 @@ namespace AaltoGames
 		//link the marginal samples to each other so that full-dimensional samples can be recovered
 		MarginalSample &nextSample=marginals[nextStep][sampleIdx];
 		MarginalSample &currentSample=marginals[currentStep][nextSample.previousMarginalSampleIdx];
-		Eigen::Map<VectorXd> control(out_control,nControlDimensions);
+		Eigen::Map<Eigen::VectorXd> control(out_control,nControlDimensions);
 		nextSample.stateDeviationCost=0;
 		//special processing for initial guesses
 		if (sampleIdx<nInitialGuesses && (currentStep<nSteps-1 || !timeAdvanced))
@@ -767,7 +767,7 @@ namespace AaltoGames
 		//link the marginal samples to each other so that full-dimensional samples can be recovered
 		MarginalSample &nextSample=marginals[nextStep][sampleIdx];
 		MarginalSample &currentSample=marginals[currentStep][nextSample.previousMarginalSampleIdx];
-		Eigen::Map<VectorXd> control(out_control,nControlDimensions);
+		Eigen::Map<Eigen::VectorXd> control(out_control,nControlDimensions);
 		//special processing for initial guesses
 		if (sampleIdx<nInitialGuesses && (currentStep<nSteps-1 || !timeAdvanced))  //don't use the old best for the last frame (as it has been "scrolled")
 		{
@@ -857,23 +857,23 @@ namespace AaltoGames
 		We traverse the pipe backwards by fixing x_next and solving for maximum likelihood x,u. For next backward step, x becomes x_next.
 
 		*/
-		VectorXd xu(nStateDimensions+nControlDimensions),x_next(nStateDimensions),x(nStateDimensions);
+		Eigen::VectorXd xu(nStateDimensions+nControlDimensions),x_next(nStateDimensions),x(nStateDimensions);
 
 		//Matrix of state vectors
-		MatrixXd X(nStateDimensions,nSamples);
-		VectorXd u(nControlDimensions);
+		Eigen::MatrixXd X(nStateDimensions,nSamples);
+		Eigen::VectorXd u(nControlDimensions);
 		//Vector of data vector weights
-		VectorXd w(nSamples);
-		VectorXd stateDiff(nStateDimensions);
+		Eigen::VectorXd w(nSamples);
+		Eigen::VectorXd stateDiff(nStateDimensions);
 		//shorthands for dimensions
 		int uDim=nControlDimensions;				
 		int xDim=nStateDimensions;					
 		int xuDim=xDim+uDim;
 		//regularization matrix
-		MatrixXd regularization(xDim,xDim);
+		Eigen::MatrixXd regularization(xDim,xDim);
 		regularization.setIdentity();
 		regularization*=gbpRegularization;
-		MatrixXd xuRegularization(xuDim,xuDim);
+		Eigen::MatrixXd xuRegularization(xuDim,xuDim);
 		xuRegularization.setIdentity();
 		xuRegularization*=gbpRegularization;
 
@@ -896,9 +896,9 @@ namespace AaltoGames
 		//Now iterate backwards over the steps
 		int bestIdx=bestFullSampleIdx;
 		//Matrix of column data vectors [x u x_next]', and the respective covariance and mean 
-		MatrixXd XUX(nStateDimensions*2+nControlDimensions,nSamples);
-		MatrixXd XUXCov(nStateDimensions*2+nControlDimensions,nStateDimensions*2+nControlDimensions);
-		VectorXd XUXMean(nStateDimensions*2+nControlDimensions);
+		Eigen::MatrixXd XUX(nStateDimensions*2+nControlDimensions,nSamples);
+		Eigen::MatrixXd XUXCov(nStateDimensions*2+nControlDimensions,nStateDimensions*2+nControlDimensions);
+		Eigen::VectorXd XUXMean(nStateDimensions*2+nControlDimensions);
 		for (int step=nSteps; step>0; step--)
 		{
 
@@ -942,10 +942,10 @@ namespace AaltoGames
 			}
 
 			//Compute regression so that E[x,u | x_next]=mu_xu + R(x_next - mu_x_next). For reference, see "multivariate normal distribution" on Wikipedia
-			MatrixXd R=XUXCov.block(0,xuDim,xuDim,xDim) //covariance of x,u with x_next. x_next is the lower right corner of the full covariance
+			Eigen::MatrixXd R=XUXCov.block(0,xuDim,xuDim,xDim) //covariance of x,u with x_next. x_next is the lower right corner of the full covariance
 				* (XUXCov.block(xuDim,xuDim,xDim,xDim)+regularization).inverse();  //inverse of the autocovariance of x_next
-			VectorXd mu_xu=XUXMean.block(0,0,xuDim,1);
-			VectorXd mu_x_next=XUXMean.block(xuDim,0,xDim,1);
+			Eigen::VectorXd mu_xu=XUXMean.block(0,0,xuDim,1);
+			Eigen::VectorXd mu_x_next=XUXMean.block(xuDim,0,xDim,1);
 
 			//update new x_next
 			xu=mu_xu + R*(x_next - mu_x_next);
@@ -982,11 +982,11 @@ namespace AaltoGames
 			else
 			{
 				//Control had to be clamped => compute a new regression for x as a function of both x_next and u, the latter fixed to the clamped value 
-				MatrixXd R=XUXCov.block(0,xDim,xDim,xuDim) //covariance of x with u,x_next. 
+				Eigen::MatrixXd R=XUXCov.block(0,xDim,xDim,xuDim) //covariance of x with u,x_next. 
 					* (XUXCov.block(xDim,xDim,xuDim,xuDim)+xuRegularization).inverse();  //inverse of the autocovariance of x_next
-				VectorXd mu_x=XUXMean.block(0,0,xDim,1);
-				VectorXd mu_ux_next=XUXMean.block(xDim,0,xuDim,1);
-				VectorXd ux_next(nControlDimensions+nStateDimensions);
+				Eigen::VectorXd mu_x=XUXMean.block(0,0,xDim,1);
+				Eigen::VectorXd mu_ux_next=XUXMean.block(xDim,0,xuDim,1);
+				Eigen::VectorXd ux_next(nControlDimensions+nStateDimensions);
 				ux_next.block(0,0,nControlDimensions,1)=u;
 				ux_next.block(nControlDimensions,0,nStateDimensions,1)=x_next;
 				x=mu_x + R*(ux_next - mu_ux_next);

@@ -350,7 +350,7 @@ void MyWindow::draw2dUI() {
 	drawCostAndResamp();
 	if (_wSM[debug]) {
 		for (int i = 0; i < UIList.size(); ++i) { UIList[i]->drawBoundBox(); } //draw UI bound box
-		stringstream ss; ss.str(""); ss << "X:" << this->mMouseX << " Y:" << this->mMouseY;	drawTextAtLocation(10, .994*mWinHeight, ss.str(), 1.1, .08);//mouse location
+		std::stringstream ss; ss.str(""); ss << "X:" << this->mMouseX << " Y:" << this->mMouseY;	drawTextAtLocation(10, .994*mWinHeight, ss.str(), 1.1, .08);//mouse location
 	}
 	if (_wSM[selMrkr]) {
 		float stX = 5, stY = 1.01*UIList[1]->height + 12, incrY = 12;		//UIList[1] is CPBPhandler, we want to put these right underneath
@@ -368,7 +368,7 @@ void MyWindow::draw2dUI() {
 //draw costs and resampling idx pruning paths on screen
 void MyWindow::drawCostAndResamp() {
 	float stX = 5, stY = 1.01*UIList[1]->height, incrY = 12;		//UIList[1] is CPBPhandler, we want to put these right underneath
-	stringstream ss; 
+	std::stringstream ss;
 	ss.str(""); ss << "Main Context Cost : " << buildStrFromFloat(mainCntxtCost, "%.4f");	drawTextAtLocation(stX, stY, ss.str(), 1.1, .08);
 	stY += incrY;
 	ss.str(""); ss << "Main Context Jerk Cost :" << buildStrFromFloat(cpbp->masterSimCntxt->jerkCost, "%.4f");	drawTextAtLocation(stX, stY, ss.str(), 1.1, .08);
@@ -448,7 +448,7 @@ void MyWindow::getCurColor() { glGetFloatv(GL_CURRENT_COLOR, cc); }
 void MyWindow::setOldColor() { glColor4f(cc[0], cc[1], cc[2], cc[3]); }
 
 //draw com, cop and other quantities for this skeleton
-void MyWindow::drawCOM(const Vector3d& com, const Vector3d& cop, const Vector3d& comVel, double gndLocY) {
+void MyWindow::drawCOM(const Eigen::Ref<const Eigen::Vector3d>& com, const Eigen::Ref<const Eigen::Vector3d>& cop, const Eigen::Ref<const Eigen::Vector3d>& comVel, double gndLocY) {
 
 	GLUquadricObj *c;
 	c = gluNewQuadric();
@@ -484,7 +484,7 @@ void MyWindow::drawSelMrkrDragForce(GLUquadricObj *c) {
 	}
 }//drawDragForce
 //draw a line from st in mv dir
-void MyWindow::drawVecLine(GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Vector3d& st, const Vector3d& mv) {
+void MyWindow::drawVecLine(GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Eigen::Ref<const Eigen::Vector3d>& st, const Eigen::Ref<const Eigen::Vector3d>& mv) {
 	glPushMatrix();
 	glColor4f(cr, cg, cb, ca);
 	glTranslated(st(0), st(1), st(2));
@@ -495,7 +495,7 @@ void MyWindow::drawVecLine(GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const
 	glPopMatrix();
 }
 //draw a force vector arrow from st in mv dir
-void MyWindow::drawFrcVecLine(GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Vector3d& st, const Vector3d& mv) {
+void MyWindow::drawFrcVecLine(GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Eigen::Ref<const Eigen::Vector3d>& st, const Eigen::Ref<const Eigen::Vector3d>& mv) {
 	glPushMatrix();
 	glColor4f(cr, cg, cb, ca);
 	Eigen::Vector3d stOff(.1*mv);
@@ -535,7 +535,7 @@ void MyWindow::drawFrcVecLine(GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, co
 	glEnd();
 	glPopMatrix();
 }
-void MyWindow::drawVecBall(GLUquadricObj *c, GLdouble rad, GLint sl, GLint st, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Vector3d& coord) {
+void MyWindow::drawVecBall(GLUquadricObj *c, GLdouble rad, GLint sl, GLint st, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Eigen::Ref<const Eigen::Vector3d>& coord) {
 	glPushMatrix();
 	glColor4f(cr, cg, cb, ca);
 	glTranslatef(coord(0), coord(1), coord(2));
@@ -564,7 +564,7 @@ void MyWindow::enable2dUIMode(bool on) {
 }//set2dUIMode
 
 
-void MyWindow::drawTextAtLocation(float x, float y, string text, float lineW, float scl) {
+void MyWindow::drawTextAtLocation(float x, float y, std::string text, float lineW, float scl) {
 	glPushMatrix();
 	glTranslatef(x, y, 0);
 	glColor4f(0, 0, 0, 1);
@@ -577,7 +577,7 @@ void MyWindow::drawTextAtLocation(float x, float y, string text, float lineW, fl
 
 }//drawText
 
-void MyWindow::drawAxes(const Vector3d& axesLoc, float len, bool altColor) {
+void MyWindow::drawAxes(const Eigen::Ref<const Eigen::Vector3d>& axesLoc, float len, bool altColor) {
 	float col = (altColor ? .5f : 0);
 	glPushMatrix();
 	glTranslatef(axesLoc(0), axesLoc(1), axesLoc(2));
@@ -670,7 +670,7 @@ int MyWindow::processHits(GLint _hits, GLuint _buffer[]) {
 }
 //handles only 1 target currently - can be modified easily to handle multiples by maintaining a click target list idx'ed by activeMarkerIDX
 void MyWindow::createConstraint(int idx) { clickTarget = cpbp->masterSimCntxt->markers[idx]->getWorldPosition(); selMrkrIDXs[idx] = true; frcAppStr[idx] = ""; activeMarkerCnt++; }
-void MyWindow::modifyConstraint(const Eigen::Vector3d& _deltaP) {	clickTarget += _deltaP;}
+void MyWindow::modifyConstraint(const Eigen::Ref<const Eigen::Vector3d>& _deltaP) {	clickTarget += _deltaP;}
 void MyWindow::removeConstraint(int idx) { clickTarget = cpbp->masterSimCntxt->markers[idx]->getWorldPosition();	selMrkrIDXs[idx] = false; frcAppStr[idx] = ""; activeMarkerCnt--; }
 void MyWindow::clearAllConstraints() {
 	clickTarget = cpbp->masterSimCntxt->markers[0]->getWorldPosition();

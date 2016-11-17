@@ -6,7 +6,7 @@
 namespace AaltoGames
 {
 
-	static double diagGaussianNormalizingConstant(const Eigen::VectorXd &std)
+	static double diagGaussianNormalizingConstant(const Eigen::Ref<const Eigen::VectorXd> &std)
 	{
 		//the norm. constant for a k-dimensional gaussian is given by 1/sqrt[(2pi)^k det(cov)]
 		//For diag. covariance, det(cov)=trace(cov)=squared(std.prod())
@@ -19,7 +19,7 @@ namespace AaltoGames
 		return 1.0 / (std*sqrt(2 * F_PI))*exp(-0.5*squared(x - mean) / squared(std));
 	}
 
-	static double evalGaussianPdf(const Eigen::VectorXd &x, const Eigen::VectorXd &mean, const Eigen::VectorXd &std)
+	static double evalGaussianPdf(const Eigen::Ref<const Eigen::VectorXd> &x, const Eigen::Ref<const Eigen::VectorXd> &mean, const Eigen::Ref<const Eigen::VectorXd> &std)
 	{
 		double normConst=1.0;
 		int k=x.rows();
@@ -91,7 +91,7 @@ namespace AaltoGames
 	}
 
 
-	DiagonalGMM::DiagonalGMM(const Eigen::VectorXd& weightsIn,const Eigen::MatrixXd& means, const std::vector<Eigen::MatrixXd>& cov){
+	DiagonalGMM::DiagonalGMM(const Eigen::Ref<const Eigen::VectorXd>& weightsIn,const Eigen::MatrixXd& means, const std::vector<Eigen::MatrixXd>& cov){
 		nDimensions = means.cols();
 		nComponents = means.rows();
 		//TODO Find out what sampler does and initialize it here properly
@@ -105,7 +105,7 @@ namespace AaltoGames
 		}
 	}
 
-	DiagonalGMM::DiagonalGMM(const Eigen::VectorXd& weightsIn,const Eigen::MatrixXd& means, const std::vector<Eigen::VectorXd>& cov){
+	DiagonalGMM::DiagonalGMM(const Eigen::Ref<const Eigen::VectorXd>& weightsIn,const Eigen::MatrixXd& means, const std::vector<Eigen::VectorXd>& cov){
 		nDimensions = means.cols();
 		nComponents = means.rows();
 		//TODO Find out what sampler does and initialize it here properly
@@ -146,7 +146,7 @@ namespace AaltoGames
 	{
 		return sampler->sample();
 	}
-	void DiagonalGMM::setStds(const Eigen::VectorXd &src )
+	void DiagonalGMM::setStds(const Eigen::Ref<const Eigen::VectorXd> &src )
 	{
 		for (int i=0; i<nComponents; i++)
 		{
@@ -166,7 +166,7 @@ namespace AaltoGames
 		dst.weightsUpdated();
 	}
 
-	double DiagonalGMM::p(const Eigen::VectorXd &v )
+	double DiagonalGMM::p(const Eigen::Ref<const Eigen::VectorXd> &v )
 	{
 		double densitySum=0;
 		for (int i=0; i<nComponents; i++)
@@ -176,7 +176,7 @@ namespace AaltoGames
 		return densitySum;
 	}
 
-	double DiagonalGMM::makeConditional(const Eigen::VectorXd& fixedVars, DiagonalGMM &dst )
+	double DiagonalGMM::makeConditional(const Eigen::Ref<const Eigen::VectorXd>& fixedVars, DiagonalGMM &dst )
 	{
 		int nFixed=fixedVars.rows();
 		int nNonFixed=nDimensions-nFixed;
@@ -208,7 +208,7 @@ namespace AaltoGames
 	}
 
 
-	void DiagonalGMM::sampleWithLimits( Eigen::VectorXd &dst, const Eigen::VectorXd &minValues, const Eigen::VectorXd &maxValues  )
+	void DiagonalGMM::sampleWithLimits( Eigen::VectorXd &dst, const Eigen::Ref<const Eigen::VectorXd> &minValues, const Eigen::Ref<const Eigen::VectorXd> &maxValues  )
 	{
 		int idx=sampleComponent();
 		//std::cout<<"sampleWithLimits vec selected component "<<idx<<"\n";
@@ -220,7 +220,7 @@ namespace AaltoGames
 		}
 	}
 
-	void DiagonalGMM::sampleWithLimits( Eigen::Map<Eigen::VectorXd> &dst, const Eigen::VectorXd &minValues, const Eigen::VectorXd &maxValues )
+	void DiagonalGMM::sampleWithLimits( Eigen::Map<Eigen::VectorXd> &dst, const Eigen::Ref<const Eigen::VectorXd> &minValues, const Eigen::Ref<const Eigen::VectorXd> &maxValues )
 	{
 		int idx=sampleComponent();
 		//std::cout<<"sampleWithLimits map selected component "<<idx<<"\n";

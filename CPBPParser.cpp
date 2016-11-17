@@ -68,12 +68,12 @@ namespace cPBPropApp {
 		// skeleton data
 		tinyxml2::XMLElement* configElement = NULL;
 		configElement = _configFile.FirstChildElement("CPBPConfig");
-		if (configElement == NULL) {			cout << "Config file " << _filename << " does not contain Required <CPBPConfig> as an element.\n";			return;		}
+		if (configElement == NULL) { std::cout << "Config file " << _filename << " does not contain Required <CPBPConfig> as an element.\n";			return;		}
 
 		// skeleton data
 		tinyxml2::XMLElement* skelElement = NULL;
 		skelElement = configElement->FirstChildElement("skeleton");
-		if (skelElement == NULL) {			cout << "Config file " << _filename << " does not contain <skeleton> as an element.\n";	return;		}
+		if (skelElement == NULL) { std::cout << "Config file " << _filename << " does not contain <skeleton> as an element.\n";	return;		}
 		else {
 			std::vector<size_t> tmpCoordIds;
 			Eigen::VectorXd tmpInitConfig;
@@ -95,12 +95,12 @@ namespace cPBPropApp {
 		//params data
 		tinyxml2::XMLElement* paramsElement = NULL;
 		paramsElement = configElement->FirstChildElement("params");
-		if (paramsElement == NULL) {			cout << "Config file " << _filename << " does not contain Required <params> as an element.\n";		}
+		if (paramsElement == NULL) { std::cout << "Config file " << _filename << " does not contain Required <params> as an element.\n";		}
 		else {			readCPBPParams(dataPath,paramsElement, cp);		}
 		//ui data
 		tinyxml2::XMLElement* UIconfigElement = NULL;
 		UIconfigElement = configElement->FirstChildElement("uiConfig");
-		if (UIconfigElement == NULL) {			cout << "Config file " << _filename << " does not contain Required <uiConfig> as an element.\n";		}
+		if (UIconfigElement == NULL) { std::cout << "Config file " << _filename << " does not contain Required <uiConfig> as an element.\n";		}
 		else {			readCPBPUIFile(dataPath,UIconfigElement);		}
 
 	}//readCPBPConfig
@@ -119,14 +119,10 @@ namespace cPBPropApp {
 		try { dart::utils::openXMLFile(_prmsCfgFile, cfgFileName.c_str()); }
 		catch (std::exception const& e) { std::cout << "Params Config LoadFile  " << cfgFileName << " Fails: " << e.what() << std::endl;				return; }
 		std::string pname;
-		//double pvald;
-		//int pvali;
-		//bool pvalb;
-		//std::string pvalStr;
 		// individual params in base config data
 		tinyxml2::XMLElement* paramElem = NULL;
 		paramElem = _prmsCfgFile.FirstChildElement("CPBP_ParamsConfig");
-		if (paramElem == NULL) { cout << "Params Config file " << cfgFileName << " does not contain <CPBP_ParamsConfig> as an element.\n";				return; }
+		if (paramElem == NULL) { std::cout << "Params Config file " << cfgFileName << " does not contain <CPBP_ParamsConfig> as an element.\n";				return; }
 		else {//read in configuration params
 			ElementEnumerator parameters(paramElem, "parameter");
 			while (parameters.next()) {
@@ -138,30 +134,8 @@ namespace cPBPropApp {
 					cp->setStateRBI(bodyIdxs);
 				}
 				else {
-
-					//pvald = -.12345678; pvali = -12345; pvalb = false; pvalStr = "readNonStrAsStr";
 					std::string v = "val", s = pElem->FirstChildElement(v.c_str())->GetText();
 					cp->setParamValFromXMLStr(pname, s);
-					//these failing is expected (especially on the boolean check)
-					//we are trying to get every possible type the value can be, and then we let setParamValFromXML sort it out based on the name of the param
-					//so long as the value specified in the file is legitimate for the particular variable then the value will get assigned to the variable properly					
-					//try { pvald = boost::lexical_cast<double>(s); std::cout << "pvald:" << pvald << endl; }//getValueDouble(pElem, "val");				}//read as double
-					//catch (std::exception const& e) { pvald = -.12345678; }//if fails, no problem, can load dummy data since will be ignored - using weird values to debug
-					//try { pvali = boost::lexical_cast<int>(s); std::cout << "pvali:" << pvali << endl;}//getValueInt(pElem, "val"); }//read as int													
-					//catch (std::exception const& e) { pvali = -12345; }//if fails, no problem, can load dummy data since will be ignored
-					//try { pvalb = lclGetValueBool(pElem, "val");std::cout << "pvalb:" << pvalb << endl;}//read as bool	-- using lclGetValueBool to avoid assertion if value not boolean in parser.cpp													
-					//catch (std::exception const& e) { pvalb = false; }//if fails, no problem, can load dummy data since will be ignored
-					//try { pvalStr = s; std::cout << "pvalStr:" << pvalStr << endl;}// getValueString(pElem, "val"); }//read as string														  
-					//catch (std::exception const& e) { pvalStr = "readNonStrAsStr"; }//if fails, no problem, can load dummy data since will be ignored
-					//try { pvald = stod(s); }//getValueDouble(pElem, "val");				}//read as double
-					//catch (std::exception const& e) { pvald = -.12345678; }//if fails, no problem, can load dummy data since will be ignored - using weird values to debug
-					//try { pvali = stoi(s); }//getValueInt(pElem, "val"); }//read as int													
-					//catch (std::exception const& e) { pvali = -12345; }//if fails, no problem, can load dummy data since will be ignored
-					//try { pvalb = lclGetValueBool(pElem, "val"); }//read as bool	-- using lclGetValueBool to avoid assertion if value not boolean in parser.cpp													
-					//catch (std::exception const& e) { pvalb = false; }//if fails, no problem, can load dummy data since will be ignored
-					//try { pvalStr = s; }// getValueString(pElem, "val"); }//read as string														  
-					//catch (std::exception const& e) { pvalStr = "readNonStrAsStr"; }//if fails, no problem, can load dummy data since will be ignored
-					//cp->setParamValFromXML(pname, pvald, pvali, pvalb, pvalStr);
 				}
 			}
 			cp->setCurrentValsAsDefault();			//initializes important values and sets defaults
@@ -174,10 +148,10 @@ namespace cPBPropApp {
 		//	cust_filename = "../apps/particleBeliefProp/CPBP_ParamsConfig.xml" / >
 		//load in base first, and then if any cust file is defined, load whatever values are specified within
 		std::string pCfgFileName;
-		stringstream ss;
+		std::stringstream ss;
 		tinyxml2::XMLElement* paramsConfig = NULL;
 		paramsConfig = paramsElement->FirstChildElement("paramsFile");
-		if (paramsConfig == NULL) { cout << "Params Config element does not contain <paramsFile> as an element.\n"; }
+		if (paramsConfig == NULL) { std::cout << "Params Config element does not contain <paramsFile> as an element.\n"; }
 		else {
 			//base config, will set all values
 			ss.str("");
@@ -208,14 +182,14 @@ namespace cPBPropApp {
 		// Load xml and create Document
 		std::string skelConfigFile, skelType,strIDXInWorld = "1";
 		//int idxInWorld = 1;
-		stringstream ss;
+		std::stringstream ss;
 
 		tinyxml2::XMLElement* skelFileElem = NULL;
 		skelFileElem = skelElement->FirstChildElement("skelFile");
 		//skel file elem needs to be of format : <skelFile filename= "{.skel file name}" type="{understood skeleton type (i.e. humanoid)}"></skelFile>
 		if (skelFileElem == NULL) { 
 			ss << dataPath << "../apps/particleBeliefProp/fullbodyPBP.skel";
-			cout << "SkelFile element does not contain <skelFile> as an element, using defaults : filename = "<<ss.str()<<" and skelType = humanoid\n";
+			std::cout << "SkelFile element does not contain <skelFile> as an element, using defaults : filename = "<<ss.str()<<" and skelType = humanoid\n";
 			//cp->setParamValFromXML("skelFileName", -1, -1, false, ss.str());
 			//cp->setParamValFromXML("skelType", -1, -1, false, std::string("humanoid"));
 			cp->setParamValFromXMLStr("skelFileName", ss.str());
@@ -234,7 +208,7 @@ namespace cPBPropApp {
 		tinyxml2::XMLElement* skelIdxInWrld = NULL;
 		skelIdxInWrld = skelElement->FirstChildElement("idxInWorld");
 		if (skelIdxInWrld == NULL) { 
-			cout << "SkelIdxInWrld element does not contain <idxInWorld> as an element, using defaults idxInWorld of skeleton == 1\n"; 
+			std::cout << "SkelIdxInWrld element does not contain <idxInWorld> as an element, using defaults idxInWorld of skeleton == 1\n";
 		}
 		else {
 			//idxInWorld = getValueInt(skelElement, "idxInWorld");
@@ -245,7 +219,7 @@ namespace cPBPropApp {
 
 		tinyxml2::XMLElement* skelConfig = NULL;
 		skelConfig = skelElement->FirstChildElement("initConfig");
-		if (skelConfig == NULL) { cout << "Skel Config element does not contain <initConfig> as an element, which holds skeleton initial configuration file name.\n";	return; }
+		if (skelConfig == NULL) { std::cout << "Skel Config element does not contain <initConfig> as an element, which holds skeleton initial configuration file name.\n";	return; }
 		else {					
 			ss.str("");
 			ss << dataPath << getAttribute(skelConfig, "filename");
@@ -259,7 +233,7 @@ namespace cPBPropApp {
 			// skeleton config data
 			tinyxml2::XMLElement* configElement = NULL;
 			configElement = _skelConfigFile.FirstChildElement("CPBP_InitSkelConfig");
-			if (configElement == NULL) {				cout << "Config file " << skelConfigFile << " does not contain <CPBP_InitSkelConfig> as an element.\n";						}
+			if (configElement == NULL) { std::cout << "Config file " << skelConfigFile << " does not contain <CPBP_InitSkelConfig> as an element.\n";						}
 			else {//read in configuration params
 				int numCnfgDofs = 0;
 				tinyxml2::XMLElement* configDofs = configElement->FirstChildElement("numConfigDofs");

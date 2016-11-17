@@ -44,8 +44,6 @@
 #include "dart/dynamics/Marker.h"
 #include "dart/dynamics/PointMass.h"
 #include "dart/dynamics/SoftBodyNode.h"
-using namespace std;
-
 
 namespace cPBPropApp {
 	void MotionGoal::init() {//initialize common subgoal constructs
@@ -56,7 +54,7 @@ namespace cPBPropApp {
 
 	void MotionGoal::setRestState(std::shared_ptr<SimContext> simCtxt) {
 		//initialize goal with rest pose from source sim context
-		cout << "MotionGoal::setRestState from cntxt : " << simCtxt->name << "\n";
+		std::cout << "MotionGoal::setRestState from cntxt : " << simCtxt->name << "\n";
 		restState = simCtxt->restState;
 		restPose = restState.head(simCtxt->numDofs);
 		int idx = 0;
@@ -92,7 +90,7 @@ namespace cPBPropApp {
 		targetVel = targetState.tail(simCtxt->numDofs);
 	}
 	//reset fwd vector, recalc right vec
-	void MotionGoal::setFwdVec(const Eigen::Vector3d &fwd) {
+	void MotionGoal::setFwdVec(const Eigen::Ref<const Eigen::Vector3d>& fwd) {
 		rp_Fwd = fwd;      //forward orientation direction of rest pose - vector from rest state abd to left shldr cross abd to rt shldr  - use drag vector instead
 		rp_Fwd.normalize();
 		rp_Rght = rp_Fwd.cross(rp_Up);
@@ -119,11 +117,11 @@ namespace cPBPropApp {
 			subGWtDivSds[i] = subGWts(i) / subGSds(i);
 			subGWtDivSqSds[i] = subGWts(i) / (subGSds(i) * subGSds(i));
 		}
-		cout <<"MotionGoal::updateSubGWtMultSds call Results : \n"<< *this << endl;
+		std::cout <<"MotionGoal::updateSubGWtMultSds call Results : \n"<< *this << "\n";
 	}
 
-	vector<double> MotionGoal::accumulateVals() {		//grab all locals that are modifiable by UI or used elsewhere for UI display
-		vector<double> res, tmpRes;
+	std::vector<double> MotionGoal::accumulateVals() {		//grab all locals that are modifiable by UI or used elsewhere for UI display
+		std::vector<double> res, tmpRes;
 		//get all current variable values from weights, means and sds to send to UI
 		for (int idx = 0; idx < numSubGoals; ++idx) {
 			//from subgoal obj : 
@@ -140,7 +138,7 @@ namespace cPBPropApp {
 		return res;
 	}
 
-	void MotionGoal::distributeVals(vector<double>& vals) {
+	void MotionGoal::distributeVals(std::vector<double>& vals) {
 		int ridx = 0;
 		for (int idx = 0; idx < numSubGoals; ++idx) {
 			//sending to subgoal obj : 
@@ -163,7 +161,7 @@ namespace cPBPropApp {
 		for (int i = 0; i < UI->MyPgUIBtn.size(); i++) {
 			if (UI->MyPgUIBtn[i]->isClicked()) {
 				std::string onclick = UI->MyPgUIBtn[i]->getOnClick();
-				cout << "MotionGoal handleBtnClick() : " << name << " Button Clicked ID : " << i << "|" << UI->MyPgUIBtn[i]->getLabel() << " onclick = " << onclick << endl;
+				std::cout << "MotionGoal handleBtnClick() : " << name << " Button Clicked ID : " << i << "|" << UI->MyPgUIBtn[i]->getLabel() << " onclick = " << onclick << "\n";
 				switch (i) {
 					case 0: {getValsFromUI(); return true; }//"Send Values to goal from UI",
 					case 1: {resetUIWithDefVals(); return true; }//"Reset Values for ui and goal",
@@ -192,11 +190,11 @@ namespace cPBPropApp {
 	//build components of UI universal to all goals
 	void MotionGoal::buildUI() {
 		//	//TODO : read this in from XML?
-		//cout << "Motion Goal : " << name << " UI build start" << endl;
-		string buttonNames[numUICmdBtns] = { string("Set Vals"), string("Reset Vals"), string("Redist Wts"), string("Save Vals"), string("Hide UI") };			//main named buttons
+		//std::cout << "Motion Goal : " << name << " UI build start" << "\n";
+		std::string buttonNames[numUICmdBtns] = { std::string("Set Vals"), std::string("Reset Vals"), std::string("Redist Wts"), std::string("Save Vals"), std::string("Hide UI") };			//main named buttons
 		const int numLstSldr = 4;		//final sliders after motion goals
-		string lstSldrNames[numLstSldr] = { string("Cost Mult : "), string("Full Pose SD : "), string("Low Var Level : ") , string("High Var Level :")	};			//main named buttons
-		string sldrNames[3] = { string("Weight : "), string("Target Val : "), string("Inv STD : ") };			//main named buttons
+		std::string lstSldrNames[numLstSldr] = { std::string("Cost Mult : "), std::string("Full Pose SD : "), std::string("Low Var Level : ") , std::string("High Var Level :")	};			//main named buttons
+		std::string sldrNames[3] = { std::string("Weight : "), std::string("Target Val : "), std::string("Inv STD : ") };			//main named buttons
 
 		//build subgoal-directly related components here, add components particular to each goal in the child class
 		//int numSliderCaps = numSubGoals;					//# of related slider clusters (caption for subgoal name, caption for subgoal cost eval, bool for subgoal on/off, wt slider, mean slider, sd slider
@@ -205,23 +203,23 @@ namespace cPBPropApp {
 		//int numObjs = numUICmdBtns + 6 + 4 + numSubGoals * 8;		//total # of UI objects: numBtns + (2*numLastSliders) + 4 + numSubGoals * 8
 
 		UI->numObjs += numObjs;								//# of ui objects
-		vector<int> objType;								//what type each object is : 0 : button, 1 : slider, 2 : caption, 3 : textbox
-		vector<string> objLabels;							//object labels
-		vector<vector<int>> objXY_WH;
-		vector<vector<float>> objClr;
+		std::vector<int> objType;								//what type each object is : 0 : button, 1 : slider, 2 : caption, 3 : textbox
+		std::vector<std::string> objLabels;							//object labels
+		std::vector<std::vector<int>> objXY_WH;
+		std::vector<std::vector<float>> objClr;
 
 		objType.resize(numObjs);								//what type each object is : 0 : button, 1 : slider, 2 : caption, 3 : textbox
 		objXY_WH.resize(numObjs);
 		objLabels.resize(numObjs);
 		objClr.resize(numObjs);
 		int idx = 0;
-		stringstream ss;
+		std::stringstream ss;
 
 		// wt slider (0-1), mult slider(1->100), sd slider(.0001 ->10), mean slider(-100->100)
 		float sldrMinVals[3] = { 0.0001f, -10, .01f };				//all sliders have same min and max bounds : wt slider,mean slider, sd slider
 		float sldrMaxVals[3] = { 0.9999f, 10, 1000 };					//all sliders have same min and max bounds
 		float smallSldrLen = 90;
-		vector<float> dims;
+		std::vector<float> dims;
 		dims.resize(14);
 
 		dims[0] = 18;								//sliderLen = 18
@@ -251,7 +249,7 @@ namespace cPBPropApp {
 		//interaction buttons
 		for (int i = 0; i < numUICmdBtns; ++i) {
 			ss.str("");		ss << buttonNames[i];
-			vector<float> v1 = { (i*perBtnWidth), dims[13] + dims[6], btnWide, dims[12], .75f, .75f, .75f, 1 };
+			std::vector<float> v1 = { (i*perBtnWidth), dims[13] + dims[6], btnWide, dims[12], .75f, .75f, .75f, 1 };
 			UI->initUIObj(idx++, ss.str(), 0, v1, objType, objLabels, objXY_WH, objClr);
 		}
 
@@ -259,18 +257,18 @@ namespace cPBPropApp {
 		for (int i = 0; i < numSubGoals; i ++) {		//1 column, each with button, caption, and  3 sliders
 			float widBufMult = dims[2] * i;
 			ss.str("");		ss <<"Enable";
-			vector<float> vb = { 0, widBufMult, dims[0], dims[0], .75f, .75f, .75f, 1 };
+			std::vector<float> vb = { 0, widBufMult, dims[0], dims[0], .75f, .75f, .75f, 1 };
 			UI->initUIObj(idx++, ss.str(), 0, vb, objType, objLabels, objXY_WH, objClr);
 			ss.str("");		ss << subGNames[i] << " cost : ";
-			vector<float> vCap = { dims[5], dims[7] + widBufMult, dims[3], dims[3], .25f, .25f, .25f, 1 };
+			std::vector<float> vCap = { dims[5], dims[7] + widBufMult, dims[3], dims[3], .25f, .25f, .25f, 1 };
 			UI->initUIObj(idx++, ss.str(), 2, vCap, objType, objLabels, objXY_WH, objClr);
 
 			for (int j = 0; j < 3; ++j) {//3 sliders weight/tar val/mult
 				float multX = j * dims[4];
-				vector<float> v1 = { (multX)+dims[1], (widBufMult + dims[0]), dims[1], dims[0], .85f, .85f, .85f, 1 };		//sliderwide is width of thumb
+				std::vector<float> v1 = { (multX)+dims[1], (widBufMult + dims[0]), dims[1], dims[0], .85f, .85f, .85f, 1 };		//sliderwide is width of thumb
 				UI->initUIObj(idx++, "", 1, v1, objType, objLabels, objXY_WH, objClr);		//puts appropriate values in array
 				ss.str("");		ss << sldrNames[j];
-				vector<float> v2 = { (multX)+dims[1] + dims[1], (widBufMult + dims[10]) - dims[8], dims[3], dims[3], .25f, .25f, .25f, 1 };
+				std::vector<float> v2 = { (multX)+dims[1] + dims[1], (widBufMult + dims[10]) - dims[8], dims[3], dims[3], .25f, .25f, .25f, 1 };
 				UI->initUIObj(idx++, ss.str(), 2, v2, objType, objLabels, objXY_WH, objClr);
 			}
 		}
@@ -279,22 +277,22 @@ namespace cPBPropApp {
 			float multY = (dims[2] * (numSubGoals + (.75*j)) + dims[9]) - 2 * dims[11], multCapY = multY + 4 * dims[8];
 			for (int i = 0; i < numLstSldr / 2; ++i) {
 				float multX = i* perLstSldrWid;
-				vector<float> v1 = { (multX)+dims[1], multY, dims[1], dims[0], .85f, .85f, .85f, 1 };
+				std::vector<float> v1 = { (multX)+dims[1], multY, dims[1], dims[0], .85f, .85f, .85f, 1 };
 				UI->initUIObj(idx++, "", 1, v1, objType, objLabels, objXY_WH, objClr);		//puts appropriate values in array
 				ss.str("");		ss << lstSldrNames[(j*2) + i];
-				vector<float> v2 = { (multX)+dims[1] + dims[1], multCapY, dims[3], dims[3], .25f, .25f, .25f, 1 };
+				std::vector<float> v2 = { (multX)+dims[1] + dims[1], multCapY, dims[3], dims[3], .25f, .25f, .25f, 1 };
 				UI->initUIObj(idx++, ss.str(), 2, v2, objType, objLabels, objXY_WH, objClr);
 			}
 		}
 
-		string cbNames[2] = { "Use Variable Var Lvls", "Use Squared Costs" };
+		std::string cbNames[2] = { "Use Variable Var Lvls", "Use Squared Costs" };
 		for (int i = 0; i < 2; ++i) {
 			//variable variance update - every cycle modify low and hi var levels to be equal to min and max costs of last time and squared costs enable/disable
 			ss.str("");		ss << "Enable";
-			vector<float> vb = { (i*(dims[4] + dims[1] + dims[1])), dims[13] - dims[0], dims[0], dims[0], .75f, .75f, .75f, 1 };
+			std::vector<float> vb = { (i*(dims[4] + dims[1] + dims[1])), dims[13] - dims[0], dims[0], dims[0], .75f, .75f, .75f, 1 };
 			UI->initUIObj(idx++, ss.str(), 0, vb, objType, objLabels, objXY_WH, objClr);
 			ss.str("");		ss << cbNames[i];
-			vector<float> vCap = { (i*(dims[4] + dims[1] + dims[1])) + dims[5], dims[7] + dims[13] - dims[0], dims[3], dims[3], .25f, .25f, .25f, 1 };
+			std::vector<float> vCap = { (i*(dims[4] + dims[1] + dims[1])) + dims[5], dims[7] + dims[13] - dims[0], dims[3], dims[3], .25f, .25f, .25f, 1 };
 			UI->initUIObj(idx++, ss.str(), 2, vCap, objType, objLabels, objXY_WH, objClr);
 		}
 
@@ -341,14 +339,14 @@ namespace cPBPropApp {
 				}//toggle between squared and linear cost calc or using adaptive var levels
 			}
 		}//center button captions on first 3 buttons, set rest to be checkboxes
-	//	cout << "Motion Goal : "<<name<<" UI build end :\n" <<*this<< endl;
+	//	cout << "Motion Goal : "<<name<<" UI build end :\n" <<*this<< "\n";
 	}
 
 	//get values and send to UI
 	void MotionGoal::sendValsToUI() {
-		vector<double> res = accumulateVals();
+		std::vector<double> res = accumulateVals();
 		for (int i = 0; i < UI->MyPgUISldr.size(); ++i) { UI->MyPgUISldr[i]->setSliderVal((float)(res[i])); }
-		cout << "\nMotionGoal::sendValsToUI() Send Internal Vals To UI : " << *this;
+		std::cout << "\nMotionGoal::sendValsToUI() Send Internal Vals To UI : " << *this;
 	}
 
 	void MotionGoal::resetValues(bool dummy) {//set some reasonable defaults in here that we can return to
@@ -359,15 +357,15 @@ namespace cPBPropApp {
 
 	void MotionGoal::getValsFromUI() {
 		//get all slider vals
-		vector<double> vals;
+		std::vector<double> vals;
 		for (int i = 0; i < UI->MyPgUISldr.size(); ++i) { vals.push_back(UI->MyPgUISldr[i]->getCurValue()); }
 		distributeVals(vals);			//set local values from UI
-		cout << "\nMotionGoal::getValsFromUI() Get UI data and set internal vals : " << *this;
+		std::cout << "\nMotionGoal::getValsFromUI() Get UI data and set internal vals : " << *this;
 		sendValsToUI();					//refresh UI with values - verify that all values are being set properly
 	}
 
 	void MotionGoal::resetUIWithDefVals() {		resetValues(true);		sendValsToUI();	}
-	void MotionGoal::saveUIVals() {	cout << "Not implemented yet" << endl;}
+	void MotionGoal::saveUIVals() { std::cout << "Not implemented yet" << "\n";}
 
 	//set boolean values that drive goal evaluation, handling anything special that may be necessary for 
 	//particular flags for state machine (not subgoals)

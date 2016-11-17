@@ -41,7 +41,7 @@
 #include <sstream>
 #include "dart/dart.h"
 
-using namespace std;
+
 namespace cPBPropApp {
 
 	class MyUICaption;
@@ -55,7 +55,7 @@ namespace cPBPropApp {
 		//derived from Kinect UI component library 
 	public:
 		MyUIComponent() :ID(++ID_gen), flags(0), x(0), y(0), w(0), h(0), clkX(0), clkY(0), stickX(0), stickY(0), UIvalue(0), label(""), msOverTxt(""), stsTxt(""), clr(4), onclick(""), srcOfEvnt(-1), lineWt(1.1f){ init(); }
-		MyUIComponent(int _x, int _y, int _w = 0, int _h = 0, float _sX = 0, float _sY = 0, string _lbl = "", string _msOverTxt = "", string _stsTxt = "") :
+		MyUIComponent(int _x, int _y, int _w = 0, int _h = 0, float _sX = 0, float _sY = 0, std::string _lbl = "", std::string _msOverTxt = "", std::string _stsTxt = "") :
 			ID(++ID_gen),flags(0),x(_x), y(_y), w(_w), h(_h),clkX(0), clkY(0),stickX(_sX), stickY(_sY), UIvalue(0),	label(_lbl), msOverTxt(_msOverTxt), stsTxt(_stsTxt), clr(4), onclick(""), srcOfEvnt(-1), lineWt(1.1f) 
 		{
 			init();
@@ -70,8 +70,8 @@ namespace cPBPropApp {
 		void drawBaseCmp(float delX, float delY, float lineW);           //delx, dely : displacement for label from thumb, line width for text
 
 		//passed offset, text, and (optional) scale amount (to keep text scaled to specific value
-		void drawText(float delX, float delY, string text, float lineW, bool manScale = false, float scH = 1);
-		void drawTextAtLocation(float x, float y, string text, float lineW, bool manScale, float scH);
+		void drawText(float delX, float delY, std::string text, float lineW, bool manScale = false, float scH = 1);
+		void drawTextAtLocation(float x, float y, std::string text, float lineW, bool manScale, float scH);
 
 		virtual int click(float _x, float _y, int cmpObj);
 		virtual int drag(float _x, float _y);
@@ -86,8 +86,8 @@ namespace cPBPropApp {
 		bool checkDragByThisCntrl(int cntrl) { return (this->flags[UIobjIDX_MSDrag] && (cntrl == this->srcOfEvnt)); }
 		bool canDrag() { return this->flags[UIobjIDX_CanDrag]; }
 
-		void setOnClick(string& oc) { onclick = oc; }
-		string getOnClick() { return onclick; }
+		void setOnClick(std::string& oc) { onclick = oc; }
+		std::string getOnClick() { return onclick; }
 
 		//configuration values
 		void setLoc(float _x, float _y) {
@@ -102,9 +102,9 @@ namespace cPBPropApp {
 		void setFlags(int idx, bool val) { flags[idx] = val; }
 		void setColor(float r, float g, float b, float a) { clr[0] = r; clr[1] = g; clr[2] = b; clr[3] = a; }
 		void setStick(float _x, float _y) { stickX = _x; stickY = _y; }
-		void setLabel(string _txt) { label = _txt; }
-		void setMSOverTxt(string _txt) { msOverTxt = _txt; }
-		void setStsTxt(string _txt) { stsTxt = _txt; }
+		void setLabel(std::string _txt) { label = _txt; }
+		void setMSOverTxt(std::string _txt) { msOverTxt = _txt; }
+		void setStsTxt(std::string _txt) { stsTxt = _txt; }
 		void setUIProps(bool _canClick, bool _canDrag) { flags[UIobjIDX_CanClick] = _canClick; flags[UIobjIDX_CanDrag] = _canDrag; }
 
 		void setShown(bool show) {
@@ -123,7 +123,7 @@ namespace cPBPropApp {
 		std::string getStatusTxt() { return ("" == stsTxt ? label : stsTxt); }
 		int getID() { return ID; }
 
-		virtual string buildLabel(bool showColon, MyUIComponent* cmp) { return this->buildLabel(showColon, cmp); }                                                                             //modify labels on the fly
+		virtual std::string buildLabel(bool showColon, MyUIComponent* cmp) { return this->buildLabel(showColon, cmp); }                                                                             //modify labels on the fly
 
 		virtual bool isClicked() { return flags[UIobjIDX_MSDown]; }
 		virtual void clearObjClicked(float _x, float _y, int _srcOfEvnt) {}                                                          //clear object-specific code
@@ -224,15 +224,15 @@ namespace cPBPropApp {
 		static unsigned int ID_gen;
 		int ID;
 		int winX, winY;                                 //size of window holding object
-		vector<bool> flags;							    //state flags for this object
+		std::vector<bool> flags;							    //state flags for this object
 		float x, y, w, h;								    //x,y location of upper left corner, width and height of actual control - slider button or push button
 		float clkX, clkY;							    //last click x,y value
 		//float hsXL, hsXH, hsYL, hsYH, hsXBr, hsYBr;	    //hotspots - click area on screen, in screen coords - depends on UI, in mouse click coords -- only needed for kinect
 		float stickX, stickY;						    //location of sticking point in control for kinect-driven hands 
-		vector<float> UIvalue;						    //value of control when activated, based on event type  TODD
-		string label, msOverTxt, stsTxt;                //current label, mouse over popup text, status bar text(each should default to label if empty)
-		vector<float> clr;							    //color of object, 0-1 for each value
-		string onclick;
+		std::vector<float> UIvalue;						    //value of control when activated, based on event type  TODD
+		std::string label, msOverTxt, stsTxt;                //current label, mouse over popup text, status bar text(each should default to label if empty)
+		std::vector<float> clr;							    //color of object, 0-1 for each value
+		std::string onclick;
 		int srcOfEvnt;                                  //source object of currently engaged event - KC_LEFT: left hand, KC_RIGHT : right hand, KC_MOUSE: mouse
 
 		float lineWt;									//how thick the text for this object should be
@@ -246,7 +246,7 @@ namespace cPBPropApp {
 		static const int UIobjIDX_CanClick = 4;						//object is clickable
 		static const int UIobjIDX_CanDrag = 5;						//object is draggable
 		static const int UIobjIDX_CanDispMO = 6;                        //mouse over text is enabled for this object
-		static const int UIobjIDX_CanType = 7;                        //object accepts/requires specifically keyboard input from user to change data (text box, listbox w/string values (?))
+		static const int UIobjIDX_CanType = 7;                        //object accepts/requires specifically keyboard input from user to change data (text box, listbox w/std::string values (?))
 		//immediate action flags
 		static const int UIobjIDX_MSDown = 8;						//mouse/hand has pressed on object
 		static const int UIobjIDX_MSUp = 9;						//mouse/hand has release object
@@ -278,7 +278,7 @@ namespace cPBPropApp {
 	class MyUISlider : public MyUIComponent {
 	public:
 		MyUISlider() :MyUIComponent(), slideMin(0), slideRng(0), slidePos(0), slideSubdiv(0), sbDimL(0), sbDimTh(0), horiz(true), LToR(true), useListVals(false), useCaption(false), dispMinMax(false), dispListVals(0), resListVals(0) { init(); }
-		MyUISlider(int _x, int _y, int _w = 0, int _h = 0, float _sX = 0, float _sY = 0, string _lbl = "", string _msOverTxt = "", string _stsTxt = "") :
+		MyUISlider(int _x, int _y, int _w = 0, int _h = 0, float _sX = 0, float _sY = 0, std::string _lbl = "", std::string _msOverTxt = "", std::string _stsTxt = "") :
 			MyUIComponent(_x, _y, _w, _h, _sX, _sY, _lbl, _msOverTxt, _stsTxt), slideMin(0), slideRng(0), slidePos(0), slideSubdiv(0), sbDimL(0), sbDimTh(0), horiz(true), LToR(true), useListVals(false), dispMinMax(false), useCaption(false), dispListVals(0), resListVals(0) {
 			init();
 		}							//local init		
@@ -325,7 +325,7 @@ namespace cPBPropApp {
 
 		void setIsHoriz(bool _hz) { horiz = _hz; }
 		void setIsLToR(bool _lt) { LToR = _lt; }
-		virtual string buildLabel(bool showColon, MyUISlider* cmp) {
+		virtual std::string buildLabel(bool showColon, MyUISlider* cmp) {
 			if (cmp->useListVals) {
 				return buildLabel(showColon, dispListVals[(int)cmp->getCurValue()]);
 			}
@@ -333,18 +333,18 @@ namespace cPBPropApp {
 				return buildLabel(showColon, cmp->getCurValue(), "%.4f");
 			}
 		}
-		string buildLabel(bool showColon, float val, const char* fmt) {                                          //build label to include current slider value
+		std::string buildLabel(bool showColon, float val, const char* fmt) {                                          //build label to include current slider value
 			char buf[MAX_BUF];
 			std::string::size_type colLoc = label.find_first_of(":");
-			stringstream ss;
+			std::stringstream ss;
 			sprintf(buf, fmt, val);
 			if (showColon) { ss << label.substr(0, colLoc) << ":"; }
 			ss << buf;
 			return ss.str();// label = ss.str();
 		}//buildLabel
-		string buildLabel(bool showColon, string& val) {                                          //build label to include current slider value
+		std::string buildLabel(bool showColon, std::string& val) {                                          //build label to include current slider value
 			std::string::size_type colLoc = label.find_first_of(":");
-			stringstream ss;
+			std::stringstream ss;
 			if (showColon) { ss << label.substr(0, colLoc) << ":"; }
 			ss << val;
 			return ss.str();// label = ss.str();
@@ -411,7 +411,7 @@ namespace cPBPropApp {
 
 	public :
 		bool useListVals;                   //use list values instead of numerics for this slider (like a list box)
-		vector<std::string> dispListVals;   //what values are displayed if this is used as a list box
+		std::vector<std::string> dispListVals;   //what values are displayed if this is used as a list box
 		 
 	protected:	//variables					//along with inherited members from component, need to initialize the following
 		float slideMin;                     //min value for slider
@@ -423,7 +423,7 @@ namespace cPBPropApp {
 		bool LToR;                          //whether the values INCREASE left to right(horiz)/up to down(vert) or right to left/down to up
 		bool useCaption;					//use a caption to show this slider's value instead of displaying it in the slider thumb
 		bool dispMinMax;					//display min and max slider vals at ends of slider
-		vector<std::string> resListVals;    //what values are returned as results if this is a list box
+		std::vector<std::string> resListVals;    //what values are returned as results if this is a list box
 		std::shared_ptr<MyUICaption> labelHolder;			//caption to display name and value of this slider
 
 	};//MyUISlider
@@ -431,7 +431,7 @@ namespace cPBPropApp {
 	class MyUITextBox : public MyUIComponent {
 	public:
 		MyUITextBox() :MyUIComponent(), txtVal(""), newTxtVal(""), tbState(0), maxChars(10), beingEdited(false), cursorOn(false), blinkCount(0) { init(); }
-		MyUITextBox(int _x, int _y, int _w = 0, int _h = 0, float _sX = 0, float _sY = 0, string _lbl = "", string _msOverTxt = "", string _stsTxt = "") :
+		MyUITextBox(int _x, int _y, int _w = 0, int _h = 0, float _sX = 0, float _sY = 0, std::string _lbl = "", std::string _msOverTxt = "", std::string _stsTxt = "") :
 			MyUIComponent(_x, _y, _w, h, _sX, _sY, _lbl, _msOverTxt, _stsTxt), txtVal(""), newTxtVal(""), tbState(0), maxChars(10), beingEdited(false), cursorOn(false), blinkCount(0) {
 			init();
 		}				//local init
@@ -455,7 +455,7 @@ namespace cPBPropApp {
 				beingEdited = false;
 				cursorOn = false;
 				blinkCount = 0;
-				txtVal = ("" == newTxtVal ? txtVal : string(newTxtVal));
+				txtVal = ("" == newTxtVal ? txtVal : std::string(newTxtVal));
 				newTxtVal = "";
 			}
 		}//clear values if clearClicked-generating event happened within this object
@@ -467,12 +467,12 @@ namespace cPBPropApp {
 
 		virtual void getValueForEvent(int hand, int type, int drag, float& val);
 		virtual float getCurValue() { return -1; }	                                               //use to pass state? NOT USED FOR TB		
-		string getCurTxtVal() { return (beingEdited ? newTxtVal : txtVal); }
+		std::string getCurTxtVal() { return (beingEdited ? newTxtVal : txtVal); }
 		int getMaxchars() { return maxChars; }
 
 		void setMaxChars(int _mx) { maxChars = _mx; }
 
-		virtual string buildLabel(bool showColon, MyUIComponent* cmp) { return label; }                                                           //modify labels on the fly
+		virtual std::string buildLabel(bool showColon, MyUIComponent* cmp) { return label; }                                                           //modify labels on the fly
 
 		//MyUITextBox& operator=(MyUITextBox other) {
 		//	swap(static_cast<MyUITextBox>(*this), static_cast<MyUITextBox>(other));
@@ -507,7 +507,7 @@ namespace cPBPropApp {
 	class MyUIButton : public MyUIComponent {
 	public:
 		MyUIButton() :MyUIComponent(), isCheckBox(false) { init(); }
-		MyUIButton(int _x, int _y, int _w = 0, int _h = 0, float _sX = 0, float _sY = 0, string _lbl = "", string _msOverTxt = "", string _stsTxt = "") :
+		MyUIButton(int _x, int _y, int _w = 0, int _h = 0, float _sX = 0, float _sY = 0, std::string _lbl = "", std::string _msOverTxt = "", std::string _stsTxt = "") :
 			MyUIComponent(_x, _y, _w, h, _sX, _sY, _lbl, _msOverTxt, _stsTxt), isCheckBox(false) {
 			init();
 		}				//local init
@@ -524,7 +524,7 @@ namespace cPBPropApp {
 		int toggleChecked() { isChecked = !isChecked; return(isChecked ? 1 : 0); }
 		virtual void getValueForEvent(int hand, int type, int drag, float& val);
 		virtual float getCurValue() { if (isCheckBox) { return (isChecked ? 1 : 0); } return 1; }							//button will just provide single value with default event unless is checkbox
-		virtual string buildLabel(bool showColon, MyUIComponent* cmp) { return label; }                                //modify labels on the fly
+		virtual std::string buildLabel(bool showColon, MyUIComponent* cmp) { return label; }                                //modify labels on the fly
 		//MyUIButton& operator=(MyUIButton other) {
 		//	swap(static_cast<MyUIButton>(*this), static_cast<MyUIButton>(other));
 		//	return *this;
@@ -551,7 +551,7 @@ namespace cPBPropApp {
 	class MyUICaption : public MyUIComponent {
 	public:
 		MyUICaption() :MyUIComponent() { init(); }
-		MyUICaption(int _x, int _y, int _w = 0, int _h = 0, float _sX = 0, float _sY = 0, string _lbl = "", string _msOverTxt = "", string _stsTxt = "") :
+		MyUICaption(int _x, int _y, int _w = 0, int _h = 0, float _sX = 0, float _sY = 0, std::string _lbl = "", std::string _msOverTxt = "", std::string _stsTxt = "") :
 			MyUIComponent(_x, _y, _w, h, _sX, _sY, _lbl, _msOverTxt, _stsTxt) {
 			init();
 		}				//local init
@@ -567,7 +567,7 @@ namespace cPBPropApp {
 
 		virtual void getValueForEvent(int hand, int type, int drag, float& val);
 		virtual float getCurValue() { return 1; }							//button will just provide single value with default event
-		string buildLabel(MyUISlider* cmp) {
+		std::string buildLabel(MyUISlider* cmp) {
 			if (cmp->useListVals) {
 				return buildLabel(true, cmp->dispListVals[(int)cmp->getCurValue()]);
 			}
@@ -575,22 +575,22 @@ namespace cPBPropApp {
 				return buildLabel(true, cmp->getCurValue(), "%.4f");
 			}
 		}
-		virtual string buildLabel(bool showColon, MyUIComponent* cmp) {
+		virtual std::string buildLabel(bool showColon, MyUIComponent* cmp) {
 			return buildLabel(showColon, cmp->getCurValue(), "%.4f");
 		}                                       //build label to include current slider value
-		string buildLabel(bool showColon, float val, const char* fmt) {
+		std::string buildLabel(bool showColon, float val, const char* fmt) {
 			char buf[MAX_BUF];
 			std::string::size_type colLoc = label.find_first_of(":");
-			stringstream ss;
+			std::stringstream ss;
 			sprintf(buf, fmt, val);
 			if (showColon) { ss << label.substr(0, colLoc) << ":"; }
 			ss << buf;
 			return ss.str();// label = ss.str();
 		}//buildLabel
 
-		string buildLabel(bool showColon, string str) {
+		std::string buildLabel(bool showColon, std::string str) {
 			std::string::size_type colLoc = label.find_first_of(":");
-			stringstream ss;
+			std::stringstream ss;
 			if (showColon) { ss << label.substr(0, colLoc) << ":"; }
 			ss << str;
 			return ss.str();// label = ss.str();
@@ -626,17 +626,17 @@ namespace cPBPropApp {
 
 		//initialize object vectors for hardcoded UI
 		void initUI();
-		void initUIObj(int i, string label, int type, vector<float>& vals, vector<int>& objType, vector<string>& objLabels, vector<vector<int>>& objXY_WH, vector<vector<float>>& objClr);
+		void initUIObj(int i, std::string label, int type, std::vector<float>& vals, std::vector<int>& objType, std::vector<std::string>& objLabels, std::vector<std::vector<int>>& objXY_WH, std::vector<std::vector<float>>& objClr);
 		//build UI - hardcoded values for now
-		void setUI(vector<int>& objType, vector<string>& objLabels, vector<vector<int>>& objXY_WH, vector<vector<float>>& objClr);
-		void setUI(vector<int>& objType, vector<string>& objLabels, vector<vector<int>>& objXY_WH, vector<vector<float>>& objClr, float barLen);
+		void setUI(std::vector<int>& objType, std::vector<std::string>& objLabels, std::vector<std::vector<int>>& objXY_WH, std::vector<std::vector<float>>& objClr);
+		void setUI(std::vector<int>& objType, std::vector<std::string>& objLabels, std::vector<std::vector<int>>& objXY_WH, std::vector<std::vector<float>>& objClr, float barLen);
 		//for each type being supported
-		MyUIButton* setUIButton(string& label, vector<int>& objXY_WH, vector<float>& objClr);
-		//MyUISlider* setUISlider(string& label, vector<int>& objXY_WH, vector<float>& objClr);
-		MyUISlider* setUISlider(string& label, vector<int>& objXY_WH, vector<float>& objClr, float _barLen);
-		MyUITextBox* setUITextBox(string& label, vector<int>& objXY_WH, vector<float>& objClr);
-		MyUICaption* setUICaption(string& label, vector<int>& objXY_WH, vector<float>& objClr);
-		void setBaseVals(MyUIComponent* cmp, string& label, vector<int>& objXY_WH, vector<float>& objClr);
+		MyUIButton* setUIButton(std::string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr);
+		//MyUISlider* setUISlider(string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr);
+		MyUISlider* setUISlider(std::string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr, float _barLen);
+		MyUITextBox* setUITextBox(std::string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr);
+		MyUICaption* setUICaption(std::string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr);
+		void setBaseVals(MyUIComponent* cmp, std::string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr);
 		//handle UI element clicked
 		//bool handleUIClick();
 		//draw debug bounding box around UI
@@ -698,11 +698,11 @@ namespace cPBPropApp {
 
 		std::shared_ptr<MyUICaption> debugCap;				//caption to display debug/console data on screen
 
-		vector<std::shared_ptr<MyUIComponent> >    MyPgUICmp;
-		vector<std::shared_ptr<MyUIButton> >       MyPgUIBtn;
-		vector<std::shared_ptr<MyUISlider> >       MyPgUISldr;
-		vector<std::shared_ptr<MyUICaption> >		MyPgUICaption;
-		vector<std::shared_ptr<MyUITextBox> >		MyPgUITextBox;							
+		std::vector<std::shared_ptr<MyUIComponent> >    MyPgUICmp;
+		std::vector<std::shared_ptr<MyUIButton> >       MyPgUIBtn;
+		std::vector<std::shared_ptr<MyUISlider> >       MyPgUISldr;
+		std::vector<std::shared_ptr<MyUICaption> >		MyPgUICaption;
+		std::vector<std::shared_ptr<MyUITextBox> >		MyPgUITextBox;							
 		const int UI_LEFT = 0;
 		const int UI_RIGHT = 1;
 		const int UI_MOUSE = 2;

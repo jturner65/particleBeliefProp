@@ -137,12 +137,12 @@ namespace AaltoGames
 		////Test that the number fullfils the requirements
 		if (res < minValue) {//dbug
 			//AALTO_ASSERT1(res >= minValue);
-			cout << "Min Res violated in clipped gaussian : mean : " << mean << " std : " << stdev << " min v : " << minValue << " max v : " << maxValue << " res :" << res << "\n";
+			std::cout << "Min Res violated in clipped gaussian : mean : " << mean << " std : " << stdev << " min v : " << minValue << " max v : " << maxValue << " res :" << res << "\n";
 			res = clipMinMaxd(res, minValue, maxValue);
 		}
 		else if (res > maxValue) {
 			//AALTO_ASSERT1(res <= maxValue);
-			cout << "Max Res violated in clipped gaussian : mean : " << mean << " std : " << stdev << " min v : " << minValue << " max v : " << maxValue << " res :" << res << "\n";
+			std::cout << "Max Res violated in clipped gaussian : mean : " << mean << " std : " << stdev << " min v : " << minValue << " max v : " << maxValue << " res :" << res << "\n";
 			res = clipMinMaxd(res, minValue, maxValue);
 		}
 		return res;

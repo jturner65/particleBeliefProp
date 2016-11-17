@@ -39,7 +39,7 @@
 #include <memory>
 #include <Eigen/Dense>
 #include <iostream>
-using namespace std;
+
 namespace cPBPropApp {
 
 	const float MyGuiHandler::sldrBarLen = 140;
@@ -52,9 +52,9 @@ namespace cPBPropApp {
 		//any initialization necessary
 	}
 
-	void MyGuiHandler::initUIObj(int idx, string label, int type, vector<float>& vals, vector<int>& objType, vector<string>& objLabels, vector<vector<int>>& objXY_WH, vector<vector<float>>& objClr) {
-		vector<int> tmpVec(4);
-		vector<float> tmpVec2(4);
+	void MyGuiHandler::initUIObj(int idx, std::string label, int type, std::vector<float>& vals, std::vector<int>& objType, std::vector<std::string>& objLabels, std::vector<std::vector<int>>& objXY_WH, std::vector<std::vector<float>>& objClr) {
+		std::vector<int> tmpVec(4);
+		std::vector<float> tmpVec2(4);
 		for (int i = 0; i < 4; ++i) { tmpVec[i] = vals[i]; tmpVec2[i] = vals[i + 4]; }
 		//tmpVec[0] = x; tmpVec[1] = y; tmpVec[2] = w; tmpVec[3] = h;
 		//tmpVec2[0] = r; tmpVec2[1] = g; tmpVec2[2] = b; tmpVec2[3] = a;
@@ -65,10 +65,10 @@ namespace cPBPropApp {
 	}
 
 	//build UI with passed values represnenting a list of UI objects, sizes, locations, and colors
-	void MyGuiHandler::setUI(vector<int>& objType, vector<string>& objLabels, vector<vector<int>>& objXY_WH, vector<vector<float>>& objClr) {
+	void MyGuiHandler::setUI(std::vector<int>& objType, std::vector<std::string>& objLabels, std::vector<std::vector<int>>& objXY_WH, std::vector<std::vector<float>>& objClr) {
 		setUI(objType, objLabels, objXY_WH, objClr, MyGuiHandler::sldrBarLen);
 	}
-	void MyGuiHandler::setUI(vector<int>& objType, vector<string>& objLabels, vector<vector<int>>& objXY_WH, vector<vector<float>>& objClr, float _barLen) {
+	void MyGuiHandler::setUI(std::vector<int>& objType, std::vector<std::string>& objLabels, std::vector<std::vector<int>>& objXY_WH, std::vector<std::vector<float>>& objClr, float _barLen) {
 		for (int i = 0; i < numObjs; ++i) {
 			switch (objType[i]) {
 				case 0: {MyUIButton* cmp = setUIButton(objLabels[i], objXY_WH[i], objClr[i]);	addUIButton(cmp);  break; }//button
@@ -80,13 +80,13 @@ namespace cPBPropApp {
 		}
 	}
 	//for each type being supported
-	MyUIButton* MyGuiHandler::setUIButton(string& label, vector<int>& objXY_WH, vector<float>& objClr) {
+	MyUIButton* MyGuiHandler::setUIButton(std::string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr) {
 		MyUIButton* cmp = new MyUIButton(0, 0);
 		setBaseVals(cmp, label, objXY_WH, objClr);
 		return cmp;
 	}
 
-	MyUISlider* MyGuiHandler::setUISlider(string& label, vector<int>& objXY_WH, vector<float>& objClr, float _barLen) {
+	MyUISlider* MyGuiHandler::setUISlider(std::string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr, float _barLen) {
 		MyUISlider* cmp = new MyUISlider(0, 0);
 		setBaseVals(cmp, label, objXY_WH, objClr);
 		int sdiv = 0,
@@ -102,19 +102,19 @@ namespace cPBPropApp {
 		cmp->setSlideRng(max - min);
 		return cmp;
 	}
-	MyUITextBox* MyGuiHandler::setUITextBox(string& label, vector<int>& objXY_WH, vector<float>& objClr) {
+	MyUITextBox* MyGuiHandler::setUITextBox(std::string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr) {
 		MyUITextBox* cmp = new MyUITextBox(0, 0);
 		setBaseVals(cmp, label, objXY_WH, objClr);
 		cmp->setMaxChars(10);
 		return cmp;
 	}
-	MyUICaption* MyGuiHandler::setUICaption(string& label, vector<int>& objXY_WH, vector<float>& objClr) {
+	MyUICaption* MyGuiHandler::setUICaption(std::string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr) {
 		MyUICaption* cmp = new MyUICaption(0, 0);
 		setBaseVals(cmp, label, objXY_WH, objClr);
 		return cmp;
 	}
 	//shared values for all objs
-	void MyGuiHandler::setBaseVals(MyUIComponent* cmp, string& label, vector<int>& objXY_WH, vector<float>& objClr) {
+	void MyGuiHandler::setBaseVals(MyUIComponent* cmp, std::string& label, std::vector<int>& objXY_WH, std::vector<float>& objClr) {
 		cmp->winX = winX;
 		cmp->winY = winY;
 		cmp->setLoc(objXY_WH[0], objXY_WH[1]);
@@ -286,12 +286,12 @@ namespace cPBPropApp {
 		drawText(delX, delY, label, lineW);
 	}//drawBaseCmp
 
-	void MyUIComponent::drawText(float delX, float delY, string text, float lineW, bool manScale, float scH) {
+	void MyUIComponent::drawText(float delX, float delY, std::string text, float lineW, bool manScale, float scH) {
 		if (flags[UIobjIDX_OffsLbl]) { drawTextAtLocation(x + delX, y + delY, text, lineW, manScale, scH); }
 		else { drawTextAtLocation(x, y, text, lineW, manScale, scH); }
 	}//drawText
 
-	void MyUIComponent::drawTextAtLocation(float x, float y, string text, float lineW, bool manScale, float scH) {
+	void MyUIComponent::drawTextAtLocation(float x, float y, std::string text, float lineW, bool manScale, float scH) {
 		glPushMatrix();		
 		glTranslatef(x, y, 0);
 		glColor4f(0, 0, 0, 1);
@@ -333,10 +333,10 @@ namespace cPBPropApp {
 	}
 
 	std::ostream& operator<<(std::ostream& out, const MyUIComponent& cmp) {
-		out << "ID : " << cmp.ID << " label : " << cmp.label << " onClick : " << cmp.onclick << endl;
-		out << "location : (" << cmp.x << ", " << cmp.y << ") dim : (" << cmp.w << ", " << cmp.h << ")" << std::endl;
-		out << "Color : (r: " << cmp.clr[0] << " g: " << cmp.clr[1] << " b: " << cmp.clr[2] << " a: " << cmp.clr[3] << ") " << std::endl;
-		out << "Flags : Display : " << cmp.flags[cmp.UIobjIDX_Display] << " Can Click : " << cmp.flags[cmp.UIobjIDX_CanClick] << " Can Drag : " << cmp.flags[cmp.UIobjIDX_CanDrag] << endl;
+		out << "ID : " << cmp.ID << " label : " << cmp.label << " onClick : " << cmp.onclick << "\n";
+		out << "location : (" << cmp.x << ", " << cmp.y << ") dim : (" << cmp.w << ", " << cmp.h << ")" << "\n";
+		out << "Color : (r: " << cmp.clr[0] << " g: " << cmp.clr[1] << " b: " << cmp.clr[2] << " a: " << cmp.clr[3] << ") " << "\n";
+		out << "Flags : Display : " << cmp.flags[cmp.UIobjIDX_Display] << " Can Click : " << cmp.flags[cmp.UIobjIDX_CanClick] << " Can Drag : " << cmp.flags[cmp.UIobjIDX_CanDrag] << "\n";
 		return out;
 	}
 
@@ -391,7 +391,7 @@ namespace cPBPropApp {
 		glPopMatrix();
 		if (dispMinMax) {			//display min and max vals at ends of slider
 			glPushMatrix();
-			string minV = buildLabel(false, slideMin, "%.2f"), maxV = buildLabel(false, slideMin + slideRng, "%.2f");
+			std::string minV = buildLabel(false, slideMin, "%.2f"), maxV = buildLabel(false, slideMin + slideRng, "%.2f");
 			int mn = minV.size();
 			glTranslatef(trX - (3.5 * mn), trY, 0);
 			MyUIComponent::drawTextAtLocation(0, .8f*lenY, minV, lineWt, true, .06f);
@@ -456,7 +456,7 @@ namespace cPBPropApp {
 	int MyUISlider::drag(float _x, float _y) {
 		float del = ((horiz) ? _x - clkX : _y - clkY) * UIobj_DragSens;					                            //sensitivity is modifiable
 		slidePos += del / (1.0f*sbDimL);
-		// cout<<"slider mod amt : "<< del/(1.0f * sbDimL)<<" del : "<<del<<" sbDimL "<<(sbDimL)<<" x,y : ("<<x<<", "<<y<<") _x,_y : ("<<_x<<", "<<_y<<") clkX,clkY : ("<<clkX<<", "<<clkY<<")"<<endl;
+		// cout<<"slider mod amt : "<< del/(1.0f * sbDimL)<<" del : "<<del<<" sbDimL "<<(sbDimL)<<" x,y : ("<<x<<", "<<y<<") _x,_y : ("<<_x<<", "<<_y<<") clkX,clkY : ("<<clkX<<", "<<clkY<<")"<<"\n";
 		capSlidePos();
 		return ID;
 	}
@@ -467,17 +467,17 @@ namespace cPBPropApp {
 	}
 	std::ostream& operator<<(std::ostream& out, const MyUISlider& cmp) {
 		out << static_cast<const MyUIComponent&>(cmp);                                                                        //start with base class
-		out << "Slider specific attribs : Min Val : " << cmp.slideMin << " Range : " << cmp.slideRng << " Current position (% of range) : " << (cmp.slidePos * 100) << "% " << std::endl;
-		out << "\t# of subdivisions of range : " << cmp.slideSubdiv << " Slider track dimensions (Len,Thk) : (" << cmp.sbDimL << ", " << cmp.sbDimTh << ") Orientation : " << (cmp.horiz ? "Horizontal " : "Vertical ") << std::endl;
-		out << "\tIncreasing value dir : " << (cmp.horiz ? (cmp.LToR ? "Left to Right" : "Right To Left") : (cmp.LToR ? "Down to Up" : "Up to Down")) << std::endl;
-		out << "\tUse list for values : " << cmp.useListVals << endl;
+		out << "Slider specific attribs : Min Val : " << cmp.slideMin << " Range : " << cmp.slideRng << " Current position (% of range) : " << (cmp.slidePos * 100) << "% " << "\n";
+		out << "\t# of subdivisions of range : " << cmp.slideSubdiv << " Slider track dimensions (Len,Thk) : (" << cmp.sbDimL << ", " << cmp.sbDimTh << ") Orientation : " << (cmp.horiz ? "Horizontal " : "Vertical ") << "\n";
+		out << "\tIncreasing value dir : " << (cmp.horiz ? (cmp.LToR ? "Left to Right" : "Right To Left") : (cmp.LToR ? "Down to Up" : "Up to Down")) << "\n";
+		out << "\tUse list for values : " << cmp.useListVals << "\n";
 		if (cmp.useListVals) {
 			out << "\tDisplay List Values :";
 			for (int i = 0; i < cmp.dispListVals.size(); ++i) { out << (i == 0 ? " `" : ", `") << cmp.dispListVals[i] << "`"; }
-			out << endl;
+			out << "\n";
 			out << "\tReturned List Values : ";
 			for (int i = 0; i < cmp.resListVals.size(); ++i) { out << (i == 0 ? " `" : ", `") << cmp.resListVals[i] << "`"; }
-			out << endl;
+			out << "\n";
 		}
 		return out;
 	}//op<<
@@ -509,7 +509,7 @@ namespace cPBPropApp {
 				cursorOn = false;
 				break; }
 			case(13) : {//enter pressed - save modified text as the txtVal
-				txtVal = string(newTxtVal);
+				txtVal = std::string(newTxtVal);
 				newTxtVal = "";
 				beingEdited = false;                //end editing
 				cursorOn = false;
@@ -517,12 +517,12 @@ namespace cPBPropApp {
 			case(8) :            //backspace
 			case(127) : {         //delete
 				if (0 < newTxtVal.length()) {//remove char from end of newTxtVal if there are chars to remove
-					newTxtVal = string(newTxtVal, 0, newTxtVal.length() - 1);
+					newTxtVal = std::string(newTxtVal, 0, newTxtVal.length() - 1);
 				}
 				break; }
 			default: {
 				if (maxChars > newTxtVal.length()) {
-					stringstream ss;
+					std::stringstream ss;
 					ss << newTxtVal;
 					ss << ch;
 					newTxtVal = ss.str();
@@ -542,7 +542,7 @@ namespace cPBPropApp {
 		MyUIComponent::drawBaseCmp(lblX, lblY, lineWt);
 		//draw text inside box
 		if (beingEdited) {
-			stringstream ss;
+			std::stringstream ss;
 			ss << newTxtVal;
 			blinkCount++;
 			int maxBCnt = 15;
@@ -562,7 +562,7 @@ namespace cPBPropApp {
 			beingEdited = true;
 			cursorOn = true;
 			blinkCount = 0;
-			newTxtVal = string(txtVal);             //make copy of current text in textbox
+			newTxtVal = std::string(txtVal);             //make copy of current text in textbox
 		}
 		else {
 			beingEdited = false;
@@ -574,9 +574,9 @@ namespace cPBPropApp {
 	}
 	std::ostream& operator<<(std::ostream& out, const MyUITextBox& cmp) {
 		out << static_cast<const MyUIComponent&>(cmp);                                                         //start with base class
-		out << "\tText box : Current text : " << cmp.txtVal << endl;
-		out << "\t Max Length : " << cmp.maxChars << " | Current state : " << cmp.tbState << " | Currently being edited : " << cmp.beingEdited << endl;
-		out << "\t Current edit text : '" << cmp.newTxtVal << "'" << endl;
+		out << "\tText box : Current text : " << cmp.txtVal << "\n";
+		out << "\t Max Length : " << cmp.maxChars << " | Current state : " << cmp.tbState << " | Currently being edited : " << cmp.beingEdited << "\n";
+		out << "\t Current edit text : '" << cmp.newTxtVal << "'" << "\n";
 		return out;
 	}//op<<
 

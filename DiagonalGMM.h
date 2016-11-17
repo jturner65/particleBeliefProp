@@ -27,25 +27,25 @@ namespace AaltoGames
 		//Initialize a diagonal Gaussian mixture model with the given weights, means and covariance matrices.
 		//The each row of the 'means' matrix is a mean vector of a mixture component
 		//Only the diagonals in the 'cov' matrices are used.
-		DiagonalGMM(const Eigen::VectorXd& weights,const Eigen::MatrixXd& means, const std::vector<Eigen::MatrixXd>& cov);
+		DiagonalGMM(const Eigen::Ref<const Eigen::VectorXd>& weights,const Eigen::MatrixXd& means, const std::vector<Eigen::MatrixXd>& cov);
 		//Initialize a diagonal Gaussian mixture model with the given weights, means and covariance matrices.
 		//The each row of the 'means' matrix is a mean vector of a mixture component
-		DiagonalGMM(const Eigen::VectorXd& weights,const Eigen::MatrixXd& means, const std::vector<Eigen::VectorXd>& cov);
+		DiagonalGMM(const Eigen::Ref<const Eigen::VectorXd>& weights,const Eigen::MatrixXd& means, const std::vector<Eigen::VectorXd>& cov);
 		void resize(int nComponents, int nDimensions);
 		void resample(DiagonalGMM &dst, int nDstComponents);
 		void copyFrom(DiagonalGMM &src);
 		int sampleComponent();
 		void sample(Eigen::VectorXd &dst);
 		//Sample within limits. Note that this is only an approximation, as the component normalizing constants are currently computed without limits
-		void sampleWithLimits( Eigen::VectorXd &dst, const Eigen::VectorXd &minValues, const Eigen::VectorXd &maxValues  );
-		void sampleWithLimits( Eigen::Map<Eigen::VectorXd> &dst, const Eigen::VectorXd &minValues, const Eigen::VectorXd &maxValues  );
+		void sampleWithLimits( Eigen::VectorXd &dst, const Eigen::Ref<const Eigen::VectorXd> &minValues, const Eigen::Ref<const Eigen::VectorXd> &maxValues  );
+		void sampleWithLimits( Eigen::Map<Eigen::VectorXd> &dst, const Eigen::Ref<const Eigen::VectorXd> &minValues, const Eigen::Ref<const Eigen::VectorXd> &maxValues  );
 
 		//Call this after manipulating the weights vector. Normalizes the weights and updates the internal data for sampling from the GMM
 		void weightsUpdated();
 		//inits the GMM with a single component of infinite variance
 		//		void setUniform(int nDimensions);
-		void setStds(const Eigen::VectorXd &src);
-		double p(const Eigen::VectorXd &v);
+		void setStds(const Eigen::Ref<const Eigen::VectorXd> &src);
+		double p(const Eigen::Ref<const Eigen::VectorXd> &v);
 		std::vector<Eigen::VectorXd> mean;
 		std::vector<Eigen::VectorXd> std;
 		//note: after you manipulate the weights, call weigthsUpdated() to normalize them and update the internal data needed for the sampling functions
@@ -53,7 +53,7 @@ namespace AaltoGames
 		//Note: src1 and src2 may also have 0 or DBL_MAX as std, corresponding to fixed or unconstrained variables.
 		static void multiply(DiagonalGMM &src1, DiagonalGMM &src2, DiagonalGMM &dst);
 		//fixedVars contains all the known variables (the lowest indices). Returns the sum of weights before normalizing to 1
-		double makeConditional(const Eigen::VectorXd& fixedVars, DiagonalGMM &dst);
+		double makeConditional(const Eigen::Ref<const Eigen::VectorXd>& fixedVars, DiagonalGMM &dst);
 	protected:
 		DynamicPdfSampler *sampler;
 		int nDimensions;

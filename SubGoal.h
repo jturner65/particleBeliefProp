@@ -64,13 +64,13 @@ namespace cPBPropApp {
 			inline void setWeight(double newWt) { wt = newWt; wtDivStd = wt / std; wtDivSqStd = wtDivStd / std; }
 			inline double getWeight(bool reDist) { return (active ? (reDist ? 1 : wt) : 0); }
 
-			void buildUI(int idx, int i, string label, int type, vector<float>& vals, vector<int>& objType, vector<string>& objLabels, vector<vector<int>>& objXY_WH, vector<vector<float>>& objClr, vector<float>& dims);
+			void buildUI(int idx, int i, std::string label, int type, std::vector<float>& vals, std::vector<int>& objType, std::vector<std::string>& objLabels, std::vector<std::vector<int>>& objXY_WH, std::vector<std::vector<float>>& objClr, std::vector<float>& dims);
 			void setActive(bool val) { active = val; }
 
 			//from/to UI
 			void setFromUIVals(double _wt, double _mu, double _invstd) { wt = _wt, mean = _mu, std = 1.0 / _invstd; }
-			vector<double> accumulateToUIVals() {//wt, mean, 1/std
-				vector<double> res;
+			std::vector<double> accumulateToUIVals() {//wt, mean, 1/std
+				std::vector<double> res;
 				res.push_back(wt); res.push_back(mean); res.push_back(1.0 / std);
 				return res;
 			}
@@ -80,7 +80,7 @@ namespace cPBPropApp {
 			inline double getSqCostCalc(double val) {double diff = (val - mean);return checkNan(wtDivSqStd * diff * diff, val);}
 			inline double getCostCalc(double val) { return  checkNan(wtDivStd * abs(val - mean), val); }
 			inline double checkNan(double cost, double val) {
-				if (isnan(cost)) { cout << "ALERT : Nan cost for subgoal " << name << " with value : " << val << endl; cost = 100000000.0; }
+				if (isnan(cost)) { std::cout << "ALERT : Nan cost for subgoal " << name << " with value : " << val << "\n"; cost = 100000000.0; }
 				return cost;
 			}//checkNan
 
@@ -106,4 +106,5 @@ namespace cPBPropApp {
 		};//class subgoal
 
 }//namespace cPBPropApp
+
 #endif

@@ -76,29 +76,29 @@ public:
 	//first running cpbp algorithm (upon first touching the ground)
 	//void initialCPBPRun();
 	//ui functions
-	void drawVecBall(GLUquadricObj *c, GLdouble rad, GLint sl, GLint st, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Eigen::Vector3d& coord);
-	void drawVecLine(GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Eigen::Vector3d& start, const Eigen::Vector3d& end);
-	void drawFrcVecLine(GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Eigen::Vector3d& start, const Eigen::Vector3d& end);
-	void drawAxes(const Eigen::Vector3d& axesLoc, float len, bool altColor);
-	void drawCOM(const Eigen::Vector3d& com, const Eigen::Vector3d& cop, const Eigen::Vector3d& comVel, double grnd);
+	void drawVecBall(GLUquadricObj *c, GLdouble rad, GLint sl, GLint st, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Eigen::Ref<const Eigen::Vector3d>& coord);
+	void drawVecLine(GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Eigen::Ref<const Eigen::Vector3d>& start, const Eigen::Ref<const Eigen::Vector3d>& end);
+	void drawFrcVecLine(GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, const Eigen::Ref<const Eigen::Vector3d>& start, const Eigen::Ref<const Eigen::Vector3d>& end);
+	void drawAxes(const Eigen::Ref<const Eigen::Vector3d>& axesLoc, float len, bool altColor);
+	void drawCOM(const Eigen::Ref<const Eigen::Vector3d>& com, const Eigen::Ref<const Eigen::Vector3d>& cop, const Eigen::Ref<const Eigen::Vector3d>& comVel, double grnd);
 	//void drawStringOnScreen(float x, float y, const std::string& s);
 	void drawSelMrkrDragForce(GLUquadricObj *c);
-	void drawTextAtLocation(float x, float y, string text, float lineW, float scl);
+	void drawTextAtLocation(float x, float y, std::string text, float lineW, float scl);
 
 	void displayDebugTestInfo(int idx, int cntrlIdx, int testIter);
 
 	void drawCostAndResamp();
 
-	inline string buildStrFromFloat(float val, const char* fmt = "%.4f") {
+	inline std::string buildStrFromFloat(float val, const char* fmt = "%.4f") {
 		char buf[MAX_BUF];
-		stringstream ss;
+		std::stringstream ss;
 		sprintf(buf, fmt, val);
 		ss << buf;
 		return ss.str();// label = ss.str();
 	}//buildLabel
-	inline string buildStrFromDbl(double val, const char* fmt = "%.4f") {
+	inline std::string buildStrFromDbl(double val, const char* fmt = "%.4f") {
 		char buf[MAX_BUF];
-		stringstream ss;
+		std::stringstream ss;
 		sprintf(buf, fmt, val);
 		ss << buf;
 		return ss.str();// label = ss.str();
@@ -120,21 +120,21 @@ public:
 
 	void testSimCntxtDet();
 
-	std::string buildStrFromEigen3d(const Eigen::Ref<const Eigen::Vector3d>& vec) { stringstream ss;  ss << buildStrFromDbl(vec(0)) << "," << buildStrFromDbl(vec(1)) << "," << buildStrFromDbl(vec(2)); return ss.str(); }
+	std::string buildStrFromEigen3d(const Eigen::Ref<const Eigen::Vector3d>& vec) { std::stringstream ss;  ss << buildStrFromDbl(vec(0)) << "," << buildStrFromDbl(vec(1)) << "," << buildStrFromDbl(vec(2)); return ss.str(); }
 	std::string cntctToString(dart::collision::Contact& cntct) {
-		stringstream ss;
+		std::stringstream ss;
 		try {
 			auto p = cntct.bodyNode1.lock();
 			ss << "Contact Between b1:" << p->getName();
 		}
-		catch (bad_weak_ptr b) {
+		catch (std::bad_weak_ptr b) {
 			ss << "Contact Between b1 : bad weak pointer for bodynode1 ";
 		}
 		try {
 			auto p = cntct.bodyNode2.lock();
 			ss << " and b2:" << p->getName();
 		}
-		catch (bad_weak_ptr b) {
+		catch (std::bad_weak_ptr b) {
 			ss << "and b2 : bad weak pointer for bodynode2 ";
 		}
 		ss << " | pt : " << buildStrFromEigen3d(cntct.point)
@@ -160,7 +160,7 @@ public:
 	//set up "constraint" locations to create pull force (from marker to mouse location)
 	void applyMarkerPullForce();
 	void createConstraint(int idx);
-	void modifyConstraint(const Eigen::Vector3d& _deltaP);
+	void modifyConstraint(const Eigen::Ref<const Eigen::Vector3d>& _deltaP);
 	void removeConstraint(int idx);
 	void clearAllConstraints();
 	Eigen::Vector3d reverseProjection(double _x, double _y);
@@ -194,7 +194,7 @@ public : //variables
 	double elapsedSimTime;												//time elapsed since initial timestepping call	
 
 	double mainCntxtCost;												//per-frame cost calc of main context
-	vector<bool> _wSM;													
+	std::vector<bool> _wSM;													
 	static const int beginCPBP = 0;										//whether the cpbp algorithm has begun iterating in the time step function - to allow the skeleton to hit the ground before cpbp starts.  always true once skel hits ground
 	//driven by UI buttons
 	static const int debug = 1;											//debug mode - show/hide debug info

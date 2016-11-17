@@ -50,10 +50,8 @@
 #include <thread>
 #include <mutex>
 #include <memory>
-//#include <mutex>
 
-using namespace std;
-using namespace Eigen;
+
 using namespace dart;
 using namespace dynamics;
 using namespace AaltoGames;
@@ -69,7 +67,7 @@ namespace cPBPropApp {
 		//fullDimControl(), minAngles(), maxAngles(), angleStdScales(),newControlState(),
 		angleRanges(), restState(), currState()
 	{	
-		cout << "SimCntxt Cnstrctr : " << name << endl;
+		std::cout << "SimCntxt Cnstrctr : " << name << "\n";
 	}
 
 	//copy ctor
@@ -82,7 +80,7 @@ namespace cPBPropApp {
 		angleRanges(_o.angleRanges), restState(_o.restState), currState(_o.currState)
 	
 	{
-		cout << "SimCntxt Copy Cnstrctr : " << _o.name << endl;
+		std::cout << "SimCntxt Copy Cnstrctr : " << _o.name << "\n";
 	}
 
 	//these should only change if component of skeleton is destroyed and remade - fast access to components of skeleton
@@ -95,20 +93,20 @@ namespace cPBPropApp {
 		COPList.resize(1, Eigen::Vector3d(0, 0, 0));
 		//nodes
 		numNodes = s->getNumBodyNodes();
-		nodeNames = vector<string>(numNodes, "");
-		nodes = vector<BodyNode*>(numNodes, NULL);
+		nodeNames = std::vector<std::string>(numNodes, "");
+		nodes = std::vector<BodyNode*>(numNodes, NULL);
 		for (int i = 0; i < numNodes; ++i) {		nodes[i] = s->getBodyNode(i);			nodeNames[i] = nodes[i]->getName();		}
 
 		//joints
 		numJoints = s->getNumBodyNodes();
-		jointNames = vector<string>(numJoints, "");
-		joints = vector<Joint*>(numJoints, NULL);
+		jointNames = std::vector<std::string>(numJoints, "");
+		joints = std::vector<Joint*>(numJoints, NULL);
 		for (int i = 0; i < numJoints; ++i) {		joints[i] = nodes[i]->getParentJoint();			jointNames[i] = joints[i]->getName();		}
 
 		//dofs
 		numDofs = s->getNumDofs();
-		dofNames = vector<string>(numDofs, "");
-		dofs = vector<DegreeOfFreedom*>(numDofs, NULL);
+		dofNames = std::vector<std::string>(numDofs, "");
+		dofs = std::vector<DegreeOfFreedom*>(numDofs, NULL);
 		for (int i = 0; i < numDofs; ++i) {			dofs[i] = s->getDof(i);			dofNames[i] = dofs[i]->getName();		}
 
 		//controls for PBP
@@ -130,15 +128,15 @@ namespace cPBPropApp {
 		stepIDX = -1;
 		//markers
 		numMarkers = 0;
-		for (vector<BodyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+		for (std::vector<BodyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
 			numMarkers += (*it)->getNumMarkers();
 		}
-		markerNames = vector<string>(numMarkers, "");
-		markers = vector<Marker*>(numMarkers, NULL);
+		markerNames = std::vector<std::string>(numMarkers, "");
+		markers = std::vector<Marker*>(numMarkers, NULL);
 		int tmpIDX = 0;
 		//markers idx in array need to be the same as index as in the skeleton
 
-		for (vector<BodyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+		for (std::vector<BodyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
 			for (int i = 0; i < (*it)->getNumMarkers(); ++i) {
 				markers[tmpIDX] = (*it)->getMarker(i);
 				markerNames[tmpIDX] = markers[tmpIDX]->getName();
@@ -148,7 +146,7 @@ namespace cPBPropApp {
 
 		restState.setZero(numDofs * 2);													//rest pose is first 1/2 -should be set when skeleton is at "rest" position - wait for initial contact with ground
 		getDartSkelState(s,skelLocInWorld);
-		cout << name << " : setInitVals Done " << endl;
+		std::cout << name << " : setInitVals Done " << "\n";
 	}
 
 	void SimContext::initDebugArrays(bool mstrCntxt) {
@@ -189,13 +187,13 @@ namespace cPBPropApp {
 		perStepPriorMean.setZero(numCtrlFlimDim);
 		perStepPriorStd.setZero(numCtrlFlimDim);
 
-		stateRBIdxs = vector<int>(numStateBodies);
+		stateRBIdxs = std::vector<int>(numStateBodies);
 		for (int i = 0; i < numStateBodies; ++i) {
 			stateRBIdxs[i] = _stBodyIdxs[i];
 		}
 
-		sampleVel = vector<Eigen::Vector3d>(numStateBodies, Eigen::Vector3d(0, 0, 0));
-		prevSampleVel = vector<Eigen::Vector3d>(numStateBodies, Eigen::Vector3d(0, 0, 0));
+		sampleVel = std::vector<Eigen::Vector3d>(numStateBodies, Eigen::Vector3d(0, 0, 0));
+		prevSampleVel = std::vector<Eigen::Vector3d>(numStateBodies, Eigen::Vector3d(0, 0, 0));
 
 		cdSolver = ownWorld->getConstraintSolver();
 
@@ -205,7 +203,7 @@ namespace cPBPropApp {
 		updateCOMandCVel();																	//initializing context
 		computeStateVector();
 
-		cout << name << " : initStateControlVars Done " << endl;
+		std::cout << name << " : initStateControlVars Done " << "\n";
 	}
 
 
@@ -379,7 +377,7 @@ namespace cPBPropApp {
 		}
 		
 		_flags[inCntct] = true;
-		string bn1, bn2;
+		std::string bn1, bn2;
 		//for each contact, check body nodes to see what we are colliding with
 		//determine # of bodies we are colliding with, build separate cop for each, with idx0 always being with the ground
 		Eigen::Vector3d mSum(0, 0, 0), fSum(0, 0, 0), m(0, 0, 0), surfNorm(0, -1, 0);			//sum of moments and tmp var to hold a moment
@@ -404,31 +402,31 @@ namespace cPBPropApp {
 
 			//bn1 = cntct.bodyNode1->getName(), bn2 = cntct.bodyNode2->getName();
 			//if (name.compare("Main") == 0) {
-			//cout << name << " : Cntct : " << k << " of :" << numContacts << " : " << bn1 << " and " << bn2
+			//std::cout << name << " : Cntct : " << k << " of :" << numContacts << " : " << bn1 << " and " << bn2
 			//	<< " | pt : " << cntct.point(0) << "," << cntct.point(1) << "," << cntct.point(2)
 			//	<< " | rot Pt : " << rotPt(0) << "," << rotPt(1) << "," << rotPt(2)
 			//	<< " | f : " << cntct.force(0) << "," << cntct.force(1) << "," << cntct.force(2)
 			//	<< " | n : " << cntct.normal(0) << "," << cntct.normal(1) << "," << cntct.normal(2)
 			//	<< " | m = v.cross(f) : " << m(0) << "," << m(1) << "," << m(2)
 			//	<< " | mSum : " << mSum(0) << "," << mSum(1) << "," << mSum(2)
-			//	<< " | f.n : " << cntct.force.dot(cntct.normal) << endl;
+			//	<< " | f.n : " << cntct.force.dot(cntct.normal) << "\n";
 			//}
 		}
 		if (_flags[debug]) {
 			if (sampleIDX != -1) { debugStepContacts[stepIDX] = tmpCntctVec; }
 			else {					debugStepContacts.push_back(tmpCntctVec);		}
 		}
-		//cout << endl;
+		//std::cout << "\n";
 		//(cop - COPCalcPt) = surface norm x sum of moments / sum of forces dot norm
 		//rotPt = (1.0 / (fSum.dot(-surfNorm))) * ((-surfNorm).cross(mSum));
 		double tmpRes = (fSum.dot(-surfNorm));
 		if ((abs(tmpRes) < .00001) || (numRealCntcts == 0)){
-			//cout << "\nNAN : # real cntcts: " << numRealCntcts <<"sIDX : "<<sampleIDX<<"\nCOM: " << COM(0) << "," << COM(1) << "," << COM(2) << endl;
-			//cout << "COP: " << _cop(0) << "," << _cop(1) << "," << _cop(2) << "\n" << endl;//COPCalcPt
-			//cout << "COPCalcPt: " << COPCalcPt(0) << "," << COPCalcPt(1) << "," << COPCalcPt(2) << "\n" << endl;//COPCalcPt
-			//cout << "surfNorm: " << surfNorm(0) << "," << surfNorm(1) << "," << surfNorm(2) << "\n" << endl;
-			//cout << "mSum: " << mSum(0) << "," << mSum(1) << "," << mSum(2) << "\n" << endl;
-			//cout << "fSum: " << fSum(0) << "," << fSum(1) << "," << fSum(2) << "\n" << endl;
+			//std::cout << "\nNAN : # real cntcts: " << numRealCntcts <<"sIDX : "<<sampleIDX<<"\nCOM: " << COM(0) << "," << COM(1) << "," << COM(2) << "\n";
+			//std::cout << "COP: " << _cop(0) << "," << _cop(1) << "," << _cop(2) << "\n" << "\n";//COPCalcPt
+			//std::cout << "COPCalcPt: " << COPCalcPt(0) << "," << COPCalcPt(1) << "," << COPCalcPt(2) << "\n" << "\n";//COPCalcPt
+			//std::cout << "surfNorm: " << surfNorm(0) << "," << surfNorm(1) << "," << surfNorm(2) << "\n" << "\n";
+			//std::cout << "mSum: " << mSum(0) << "," << mSum(1) << "," << mSum(2) << "\n" << "\n";
+			//std::cout << "fSum: " << fSum(0) << "," << fSum(1) << "," << fSum(2) << "\n" << "\n";
 			if (_flags[copInit]) {//use legitimate COP value (not just copied COM
 				COPList[0] = COP;			
 				return COP;
@@ -461,7 +459,7 @@ namespace cPBPropApp {
 		}
 		if (!_flags[calcJerkCost]) {	jerkCost = 0; }
 		else {							jerkCost /= (numStateBodies * jerkVar); }
-		//if () {std::cout<<"Jerk eval on "<<name<<" : jerk Var : " <<jerkVar<< " jerk cost : "<<jerkCost<<"\n";}
+		//if () {std::std::cout<<"Jerk eval on "<<name<<" : jerk Var : " <<jerkVar<< " jerk cost : "<<jerkCost<<"\n";}
 		return jerkCost;
 	}
 	//build this context's reduced state vector - up vector + (pos + vel) for each rbi in stateRBIdxs (in world coords) => only 6 bodies
@@ -472,10 +470,10 @@ namespace cPBPropApp {
 		for (int i = 0; i < numStateBodies; ++i) {
 			idx = 6 * i;
 			//Eigen::Vector3d tmp = nodes[stateRBIdxs[i]]->getCOM();
-			//cout << "name : "<< name<<" \t|index :" << i << "stateRBIdxs: " << stateRBIdxs[i] << " obj : " << nodeNames[stateRBIdxs[i]] << " com pos : " << tmp(0) << "," << tmp(1) << "," << tmp(2);
+			//std::cout << "name : "<< name<<" \t|index :" << i << "stateRBIdxs: " << stateRBIdxs[i] << " obj : " << nodeNames[stateRBIdxs[i]] << " com pos : " << tmp(0) << "," << tmp(1) << "," << tmp(2);
 			PBPState.segment(idx + 3, 3) = nodes[stateRBIdxs[i]]->getCOM();
 			//tmp = nodes[stateRBIdxs[i]]->getLinearVelocity();
-			//cout << " com vel : " << tmp(0) << "," << tmp(1) << "," << tmp(2) << endl;
+			//std::cout << " com vel : " << tmp(0) << "," << tmp(1) << "," << tmp(2) << "\n";
 			PBPState.segment(idx + 6, 3) = nodes[stateRBIdxs[i]]->getLinearVelocity();
 		}
 		//int breakPoint = 1;//for debug
@@ -499,9 +497,9 @@ namespace cPBPropApp {
 		}
 	}//overrideWristAnglesOnImpacts
 
-	string SimContext::debugCstOut() {//only for sim cntxts, not master cntxt
-		if (!_flags[debug]) { return string(""); }
-		stringstream ss;
+	std::string SimContext::debugCstOut() {//only for sim cntxts, not master cntxt
+		if (!_flags[debug]) { return std::string(""); }
+		std::stringstream ss;
 		ss << "c0:" << buildStrFromFloat(debugCosts[0], "%.2f");
 		for (int i = 1; i < cp->numFwdTimeSteps; ++i) {
 			ss << "-c" << i << ":" << buildStrFromFloat(debugCosts[i], "%.2f");
@@ -509,9 +507,9 @@ namespace cPBPropApp {
 		return ss.str();
 	}
 
-	string SimContext::debugPidxOut() {//only for sim cntxts, not master cntxt
-		if (!_flags[debug]) {			return string("");	}
-		stringstream ss;
+	std::string SimContext::debugPidxOut() {//only for sim cntxts, not master cntxt
+		if (!_flags[debug]) {			return std::string("");	}
+		std::stringstream ss;
 		ss << "p0:" << debugPrevIdx[0];
 		for (int i = 1; i < cp->numFwdTimeSteps; ++i) {
 			ss << "-p" << i << ":" << debugPrevIdx[i];
@@ -521,16 +519,16 @@ namespace cPBPropApp {
 
 
 	std::ostream& operator<<(std::ostream& out, SimContext& cntxt) {
-		out << "cntxteton mass : " << cntxt.mass << "| #Nodes : " << cntxt.numNodes << "| #Joints : " << cntxt.numJoints << "| #Dofs : " << cntxt.numDofs << " | #Markers : " << cntxt.numMarkers << endl;
+		out << "cntxteton mass : " << cntxt.mass << "| #Nodes : " << cntxt.numNodes << "| #Joints : " << cntxt.numJoints << "| #Dofs : " << cntxt.numDofs << " | #Markers : " << cntxt.numMarkers << "\n";
 		//nodes  
-		for (int i = 0; i < cntxt.numNodes; ++i) {	out << "Node (" << i << ") Name : " << cntxt.nodeNames[i] << endl;}out << "\n";
-		for (int i = 0; i < cntxt.numJoints; ++i) {	out << "Joint (" << i << ") Name : " << cntxt.jointNames[i] << endl;}out << "\n";
+		for (int i = 0; i < cntxt.numNodes; ++i) {	out << "Node (" << i << ") Name : " << cntxt.nodeNames[i] << "\n";}out << "\n";
+		for (int i = 0; i < cntxt.numJoints; ++i) {	out << "Joint (" << i << ") Name : " << cntxt.jointNames[i] << "\n";}out << "\n";
 		//dofs
-		for (int i = 0; i < cntxt.numDofs; ++i) {	out << "Dof (" << i << ") Name : " << cntxt.dofNames[i] << endl;}out << "\n";
+		for (int i = 0; i < cntxt.numDofs; ++i) {	out << "Dof (" << i << ") Name : " << cntxt.dofNames[i] << "\n";}out << "\n";
 		//markers
-		for (vector<BodyNode*>::const_iterator it = cntxt.nodes.begin(); it != cntxt.nodes.end(); ++it) {
-			out << "Markers for Node Name : " << (*it)->getName() << endl;
-			for (int i = 0; i < (*it)->getNumMarkers(); ++i) { out << "\t " << i << "th marker on node : " << (*it)->getMarker(i)->getName() << endl; }
+		for (std::vector<BodyNode*>::const_iterator it = cntxt.nodes.begin(); it != cntxt.nodes.end(); ++it) {
+			out << "Markers for Node Name : " << (*it)->getName() << "\n";
+			for (int i = 0; i < (*it)->getNumMarkers(); ++i) { out << "\t " << i << "th marker on node : " << (*it)->getMarker(i)->getName() << "\n"; }
 			out << "\n";
 		}
 		return out;

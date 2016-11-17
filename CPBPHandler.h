@@ -55,7 +55,6 @@
 
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
-using namespace std;
 using namespace AaltoGames;
 namespace cPBPropApp {
 
@@ -76,7 +75,7 @@ namespace cPBPropApp {
 		void resetAllCntxts();
 
 		//build (cnstructr) goal list
-		void buildGoals(int _numGoals, vector<int>& _numSubG);
+		void buildGoals(int _numGoals, std::vector<int>& _numSubG);
 		//set either set reststate or current pose as rest pose for all walkers, including master cntxt
 		void setMasterPoseAsRestState(bool useCurrMstrSt);
 		//step master context forward, and calculate cost of motion
@@ -86,8 +85,8 @@ namespace cPBPropApp {
 
 		void getValsFromUI();
 		void sendValsToUI();
-		vector<double> accumulateVals();
-		void distributeVals(vector<double>& vals);
+		std::vector<double> accumulateVals();
+		void distributeVals(std::vector<double>& vals);
 		void resetUIWithDefVals();
 		void saveUIVals();
 		//event handler for UI components related to this class
@@ -115,8 +114,8 @@ namespace cPBPropApp {
 		//refresh all goals at beginning of iteration step - to set variance bounds to be min/max results of last iteration of cpbp, if enabled
 		void refreshAllGoals() { for (int i = 0; i < numGoals; ++i) { goals[i]->refreshGoal(); } }
 
-		vector<double> lerpV4(vector<double>& a, double t, vector<double>& b) {
-			vector<double> res(4);
+		std::vector<double> lerpV4(std::vector<double>& a, double t, std::vector<double>& b) {
+			std::vector<double> res(4);
 			res[0] = (a[0] + t*(b[0] - a[0]));
 			res[1] = (a[1] + t*(b[1] - a[1]));
 			res[2] = (a[2] + t*(b[2] - a[2]));
@@ -133,7 +132,7 @@ namespace cPBPropApp {
 
 		//std::vector<dart::simulation::WorldPtr> mFwdSimWorlds;						//worlds for multithreaded calculation of forward physics sim
 
-		std::vector<thread> sampleThreads;											//1 thread per context
+		std::vector<std::thread> sampleThreads;											//1 thread per context
 
 		std::vector<std::shared_ptr<SimContext>> mFwdSimCntxts;						//simulation contexts (includes old skeleton adapters + PBP-specific info) for all forward particle/phisical sim worlds - provides quick access to important components of skeleton
 		std::vector<std::shared_ptr<CntxtLauncher>> mCntxtLaunchers;				//list of context launchers spanning the entire list of fwd sim cntxts. each of these will be launched in a thread, and then in turn will iterate through its walkers.  allow multiple sim contxts per thread
@@ -164,7 +163,7 @@ namespace cPBPropApp {
 
 		//UI
 		std::shared_ptr<MyGuiHandler> UI;															//UI to enable modification of sim variables used by this class
-		vector<vector<int>> UIObjIdx;																//the idx's of the UI objects corresponding to this class, idxed by type of obj and then list of idx's in that kind of obj's container
+		std::vector<std::vector<int>> UIObjIdx;																//the idx's of the UI objects corresponding to this class, idxed by type of obj and then list of idx's in that kind of obj's container
 
 	};//CPBPHandler
 }//namespace AaltoGames 

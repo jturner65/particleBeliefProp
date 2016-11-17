@@ -5,7 +5,7 @@
 # include <ctime>
 # include <string>
 
-using namespace std;
+//using namespace std;
 
 # include "truncated_normal.h"
 
@@ -83,9 +83,9 @@ int i4_uniform_ab ( int a, int b, int &seed )
 
   if ( seed == 0 )
   {
-    cerr << "\n";
-    cerr << "I4_UNIFORM_AB - Fatal error!\n";
-    cerr << "  Input value of SEED = 0.\n";
+    std::cerr << "\n";
+    std::cerr << "I4_UNIFORM_AB - Fatal error!\n";
+    std::cerr << "  Input value of SEED = 0.\n";
     exit ( 1 );
   }
 //
@@ -785,9 +785,9 @@ double normal_ms_cdf_inv ( double cdf, double mu, double sigma )
 
   if ( cdf < 0.0 || 1.0 < cdf )
   {
-    cout << "\n";
-    cout << "NORMAL_MS_CDF_INV - Fatal error!\n";
-    cout << "  CDF < 0 or 1 < CDF.\n";
+    std::cout << "\n";
+    std::cout << "NORMAL_MS_CDF_INV - Fatal error!\n";
+    std::cout << "  CDF < 0 or 1 < CDF.\n";
     exit ( 1 );
   }
 
@@ -1049,9 +1049,9 @@ double normal_ms_moment_central_values ( int order, double mu, double sigma )
   }
   else
   {
-    cerr << "\n";
-    cerr << "NORMAL_MS_MOMENT_CENTRAL_VALUES - Fatal error!\n";
-    cerr << "  Only ORDERS 0 through 10 are available.\n";
+    std::cerr << "\n";
+    std::cerr << "NORMAL_MS_MOMENT_CENTRAL_VALUES - Fatal error!\n";
+    std::cerr << "  Only ORDERS 0 through 10 are available.\n";
     exit ( 1 );
   }
 
@@ -1156,9 +1156,9 @@ double normal_ms_moment_values ( int order, double mu, double sigma )
   }
   else
   {
-    cerr << "\n";
-    cerr << "NORMAL_MS_MOMENT_VALUES - Fatal error!\n";
-    cerr << "  Only ORDERS 0 through 8 are available.\n";
+    std::cerr << "\n";
+    std::cerr << "NORMAL_MS_MOMENT_VALUES - Fatal error!\n";
+    std::cerr << "  Only ORDERS 0 through 8 are available.\n";
     exit ( 1 );
   }
 
@@ -1812,7 +1812,7 @@ double r8_uniform_01 ( int &seed )
 }
 //****************************************************************************80
 
-void r8poly_print ( int n, double a[], string title )
+void r8poly_print ( int n, double a[], std::string title )
 
 //****************************************************************************80
 //
@@ -1848,13 +1848,13 @@ void r8poly_print ( int n, double a[], string title )
   int n2;
   char plus_minus;
 
-  cout << "\n";
-  cout << title << "\n";
-  cout << "\n";
+  std::cout << "\n";
+  std::cout << title << "\n";
+  std::cout << "\n";
 
   if ( n <= 0 )
   {
-    cout << "  p(x) = 0\n";
+    std::cout << "  p(x) = 0\n";
     return;
   }
 
@@ -1871,18 +1871,18 @@ void r8poly_print ( int n, double a[], string title )
 
   if ( 2 <= n )
   {
-    cout << "  p(x) = " << plus_minus
-         << setw(14) << mag << " * x ^ " << n << "\n";
+    std::cout << "  p(x) = " << plus_minus
+         << std::setw(14) << mag << " * x ^ " << n << "\n";
   }
   else if ( n == 1 )
   {
-    cout << "  p(x) = " << plus_minus
-         << setw(14) << mag << " * x\n";
+    std::cout << "  p(x) = " << plus_minus
+         << std::setw(14) << mag << " * x\n";
   }
   else if ( n == 0 )
   {
-    cout << "  p(x) = " << plus_minus
-         << setw(14) << mag << "\n";
+    std::cout << "  p(x) = " << plus_minus
+         << std::setw(14) << mag << "\n";
   }
 
   for ( i = n - 1; 0 <= i; i-- )
@@ -1902,18 +1902,18 @@ void r8poly_print ( int n, double a[], string title )
     {
       if ( 2 <= i )
       {
-        cout << "         " << plus_minus
-             << setw(14) << mag << " * x ^ " << i << "\n";
+        std::cout << "         " << plus_minus
+             << std::setw(14) << mag << " * x ^ " << i << "\n";
       }
       else if ( i == 1 )
       {
-        cout << "         " << plus_minus
-             << setw(14) << mag << " * x\n";
+        std::cout << "         " << plus_minus
+             << std::setw(14) << mag << " * x\n";
       }
       else if ( i == 0 )
       {
-        cout << "         " << plus_minus
-             << setw(14) << mag << "\n";
+        std::cout << "         " << plus_minus
+             << std::setw(14) << mag << "\n";
       }
     }
   }
@@ -2201,7 +2201,7 @@ double r8vec_min ( int n, double *dvec )
 }
 //****************************************************************************80
 
-void r8vec_print ( int n, double a[], string title )
+void r8vec_print ( int n, double a[], std::string title )
 
 //****************************************************************************80
 //
@@ -2241,8 +2241,8 @@ void r8vec_print ( int n, double a[], string title )
   std::cout << "\n";
   for ( i = 0; i < n; i++ )
   {
-    cout << "  " << setw(8)  << i
-         << ": " << setw(14) << a[i]  << "\n";
+    std::cout << "  " << std::setw(8)  << i
+         << ": " << std::setw(14) << a[i]  << "\n";
   }
 
   return;
@@ -2615,9 +2615,9 @@ double truncated_normal_ab_cdf_inv ( double cdf, double mu, double sigma, double
 
   if ( cdf < 0.0 || 1.0 < cdf )
   {
-    cerr << "\n";
-    cerr << "TRUNCATED_NORMAL_AB_CDF_INV - Fatal error!\n";
-    cerr << "  CDF < 0 or 1 < CDF.\n";
+    std::cerr << "\n";
+    std::cerr << "TRUNCATED_NORMAL_AB_CDF_INV - Fatal error!\n";
+    std::cerr << "  CDF < 0 or 1 < CDF.\n";
     exit ( 1 );
   }
 
@@ -2745,25 +2745,25 @@ double truncated_normal_ab_moment ( int order, double mu, double sigma,
 
   if ( order < 0 )
   {
-    cerr << "\n";
-    cerr << "TRUNCATED_NORMAL_AB_MOMENT - Fatal error!\n";
-    cerr << "  ORDER < 0.\n";
+    std::cerr << "\n";
+    std::cerr << "TRUNCATED_NORMAL_AB_MOMENT - Fatal error!\n";
+    std::cerr << "  ORDER < 0.\n";
     exit ( 1 );
   }
 
   if ( sigma <= 0.0 )
   {
-    cerr << "\n";
-    cerr << "TRUNCATED_NORMAL_AB_MOMENT - Fatal error!\n";
-    cerr << "  SIGMA <= 0.0.\n";
+    std::cerr << "\n";
+    std::cerr << "TRUNCATED_NORMAL_AB_MOMENT - Fatal error!\n";
+    std::cerr << "  SIGMA <= 0.0.\n";
     exit ( 1 );
   }
 
   if ( b <= a )
   {
-    cerr << "\n";
-    cerr << "TRUNCATED_NORMAL_AB_MOMENT - Fatal error!\n";
-    cerr << "  B <= A.\n";
+    std::cerr << "\n";
+    std::cerr << "TRUNCATED_NORMAL_AB_MOMENT - Fatal error!\n";
+    std::cerr << "  B <= A.\n";
     exit ( 1 );
   }
 
@@ -2773,11 +2773,11 @@ double truncated_normal_ab_moment ( int order, double mu, double sigma,
 
   if ( a_cdf == 0.0 )
   {
-    cerr << "\n";
-    cerr << "TRUNCATED_NORMAL_AB_MOMENT - Fatal error!\n";
-    cerr << "  PDF/CDF ratio fails, because A_CDF too small.\n";
-    cerr << "  A_PDF = " << a_pdf << "\n";
-    cerr << "  A_CDF = " << a_cdf << "\n";
+    std::cerr << "\n";
+    std::cerr << "TRUNCATED_NORMAL_AB_MOMENT - Fatal error!\n";
+    std::cerr << "  PDF/CDF ratio fails, because A_CDF too small.\n";
+    std::cerr << "  A_PDF = " << a_pdf << "\n";
+    std::cerr << "  A_CDF = " << a_cdf << "\n";
     exit ( 1 );
   }
 
@@ -2787,11 +2787,11 @@ double truncated_normal_ab_moment ( int order, double mu, double sigma,
 
   if ( b_cdf == 0.0 )
   {
-    cerr << "\n";
-    cerr << "TRUNCATED_NORMAL_AB_MOMENT - Fatal error!\n";
-    cerr << "  PDF/CDF ratio fails, because B_CDF too small.\n";
-    cerr << "  B_PDF = " << b_pdf << "\n";
-    cerr << "  B_CDF = " << b_cdf << "\n";
+    std::cerr << "\n";
+    std::cerr << "TRUNCATED_NORMAL_AB_MOMENT - Fatal error!\n";
+    std::cerr << "  PDF/CDF ratio fails, because B_CDF too small.\n";
+    std::cerr << "  B_PDF = " << b_pdf << "\n";
+    std::cerr << "  B_CDF = " << b_cdf << "\n";
     exit ( 1 );
   }
 
@@ -3404,9 +3404,9 @@ double truncated_normal_a_cdf_inv ( double cdf, double mu, double sigma,
 
   if ( cdf < 0.0 || 1.0 < cdf )
   {
-    cerr << "\n";
-    cerr << "TRUNCATED_NORMAL_A_CDF_INV - Fatal error!\n";
-    cerr << "  CDF < 0 or 1 < CDF.\n";
+    std::cerr << "\n";
+    std::cerr << "TRUNCATED_NORMAL_A_CDF_INV - Fatal error!\n";
+    std::cerr << "  CDF < 0 or 1 < CDF.\n";
     exit ( 1 );
   }
 
@@ -4065,9 +4065,9 @@ double truncated_normal_b_cdf_inv ( double cdf, double mu, double sigma,
 
   if ( cdf < 0.0 || 1.0 < cdf )
   {
-    cerr << "\n";
-    cerr << "TRUNCATED_NORMAL_B_CDF_INV - Fatal error!\n";
-    cerr << "  CDF < 0 or 1 < CDF.\n";
+    std::cerr << "\n";
+    std::cerr << "TRUNCATED_NORMAL_B_CDF_INV - Fatal error!\n";
+    std::cerr << "  CDF < 0 or 1 < CDF.\n";
     exit ( 1 );
   }
 
@@ -4182,9 +4182,9 @@ double truncated_normal_b_moment ( int order, double mu, double sigma, double b 
 
   if ( order < 0 )
   {
-    cerr << "\n";
-    cerr << "TRUNCATED_NORMAL_B_MOMENT - Fatal error!\n";
-    cerr << "  ORDER < 0.\n";
+    std::cerr << "\n";
+    std::cerr << "TRUNCATED_NORMAL_B_MOMENT - Fatal error!\n";
+    std::cerr << "  ORDER < 0.\n";
     exit ( 1 );
   }
 
@@ -4194,9 +4194,9 @@ double truncated_normal_b_moment ( int order, double mu, double sigma, double b 
 
   if ( h_cdf == 0.0 )
   {
-    cerr << "\n";
-    cerr << "TRUNCATED_NORMAL_B_MOMENT - Fatal error!\n";
-    cerr << "  CDF((B-MU)/SIGMA) = 0.\n";
+    std::cerr << "\n";
+    std::cerr << "TRUNCATED_NORMAL_B_MOMENT - Fatal error!\n";
+    std::cerr << "  CDF((B-MU)/SIGMA) = 0.\n";
     exit ( 1 );
   }
 

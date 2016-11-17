@@ -1,7 +1,7 @@
 
 #include <string>
 
-using namespace std;
+//using namespace std;
 
 int i4_uniform_ab ( int a, int b, int &seed );
 

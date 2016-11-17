@@ -38,9 +38,8 @@
 #include "CPBPHandler.h"
 #include "dart/dynamics/BodyNode.h"
 
-using namespace std;
 namespace cPBPropApp {
-	BalanceMotionGoal::BalanceMotionGoal(int _numSubG, const vector<int>& _ubRbIdx) : MotionGoal(_numSubG, _ubRbIdx) {
+	BalanceMotionGoal::BalanceMotionGoal(int _numSubG, const std::vector<int>& _ubRbIdx) : MotionGoal(_numSubG, _ubRbIdx) {
 		name = "Balance Goal";
 		//(int idx, double _mean, double _sd, bool initState, bool useResForVar, const std::string& name) {
 		initSubGoal(idxCOMCOP, 0, .005, false, true, "COM-COP Proj");
@@ -74,7 +73,7 @@ namespace cPBPropApp {
 		getValsFromUI();
 		MotionGoal::refresh();
 		updateSubGWtMultSds(false);			//call whenever weights or sds change - pass false if # of subgoals isn't changing
-		cout << "Refresh called : " << name << "\n";
+		std::cout << "Refresh called : " << name << "\n";
 	}
 
 	//calculate the cost for varying from balance
@@ -120,12 +119,12 @@ namespace cPBPropApp {
 			lftCrossFwd = rp_Fwd.cross(lftRelCOM),	rftCrossFwd = rftRelCOM.cross(rp_Fwd);		//to keep feet from crossing - penalize any y value negative in either of these - need to recalc and use hip forward instead of rp_fwd
 
 		//if (-1 == simCtxt->sampleIDX) {
-		//	cout << "Com in plane : " << buildStrFromEigen3d(comInPlane) << " | closest point on line between feet : " << buildStrFromEigen3d(clsSptFt) << " | left foot point " << buildStrFromEigen3d(lftPt) << " | right foot point" << buildStrFromEigen3d(rftPt) << "\n";
+		//	std::cout << "Com in plane : " << buildStrFromEigen3d(comInPlane) << " | closest point on line between feet : " << buildStrFromEigen3d(clsSptFt) << " | left foot point " << buildStrFromEigen3d(lftPt) << " | right foot point" << buildStrFromEigen3d(rftPt) << "\n";
 		//}
 
 		int gIdx;
 		//eventually put this together as list of function pointers
-		vector<double> calcVals(numSubGoals);
+		std::vector<double> calcVals(numSubGoals);
 		calcVals[idxCOMCOP] =		(!subGFlags[idxCOMCOP]) ?  0 : calcProjSq(COP_COM, upVec);						//deviation of com projected on ground from cop
 		calcVals[idxCOMDisp] =		(!subGFlags[idxCOMDisp]) ? 0 : (comInPlane - clsSptFt).norm();					//deviation of com from closest point to line projected between feet
 		calcVals[idxCOMFwdVel] =	(!subGFlags[idxCOMFwdVel]) ? 0 : simCtxt->COMLinVel.dot(rp_Fwd);				//com velocity in direction of forward vector
@@ -135,7 +134,7 @@ namespace cPBPropApp {
 		//calcVals[idxHeadRelCOM] = headRelCOM.cross(rHeadRelCOM).norm();			//length of difference of vectors of com to head
 		calcVals[idxHeadRelCOM] = (!subGFlags[idxHeadRelCOM]) ? 0 : rHeadRelCOM.cross(headRelCOM).norm();			//length of difference of vectors of com to head
 		if (calcVals[idxHeadRelCOM] < 0) {
-			cout << "Head rel com in xprod < 0 : rest headRel Com " << buildStrFromEigen3d(rHeadRelCOM) << " | head rel coom : " << buildStrFromEigen3d(headRelCOM) << "\n";// << " | left foot point " << buildStrFromEigen3d(lftPt) << " | right foot point" << buildStrFromEigen3d(rftPt) << "\n";
+			std::cout << "Head rel com in xprod < 0 : rest headRel Com " << buildStrFromEigen3d(rHeadRelCOM) << " | head rel coom : " << buildStrFromEigen3d(headRelCOM) << "\n";// << " | left foot point " << buildStrFromEigen3d(lftPt) << " | right foot point" << buildStrFromEigen3d(rftPt) << "\n";
 
 		}
 		//calcVals[idxFootHeight] = avgFootHeight;
@@ -215,13 +214,13 @@ namespace cPBPropApp {
 	}//setSubGFlag
 
 
-	vector<double> BalanceMotionGoal::accumulateVals() {		//grab all locals that are modifiable by UI or used elsewhere
-		vector<double> res = MotionGoal::accumulateVals();
+	std::vector<double> BalanceMotionGoal::accumulateVals() {		//grab all locals that are modifiable by UI or used elsewhere
+		std::vector<double> res = MotionGoal::accumulateVals();
 		//add goal specific data here
 		return res;
 	}
 
-	void BalanceMotionGoal::distributeVals(vector<double>& vals) {//copy all UI values to their appropriate lcl variables (from UI or file)
+	void BalanceMotionGoal::distributeVals(std::vector<double>& vals) {//copy all UI values to their appropriate lcl variables (from UI or file)
 		MotionGoal::distributeVals(vals);							//main weights, means and sds are set in MotionGoal::distributeVals
 	}
 
@@ -240,7 +239,7 @@ namespace cPBPropApp {
 
 	void BalanceMotionGoal::getValsFromUI() { MotionGoal::getValsFromUI();	 }
 	void BalanceMotionGoal::resetUIWithDefVals() {	resetValues(true);	sendValsToUI();	}
-	void BalanceMotionGoal::saveUIVals() {	cout << "Not implemented yet" << endl;}
+	void BalanceMotionGoal::saveUIVals() {	std::cout << "Not implemented yet" << "\n";}
 	void BalanceMotionGoal::buildUI() {	MotionGoal::buildUI();	}
 
 	bool BalanceMotionGoal::handleBtnClick() {  //only for goal-specific buttons
@@ -249,7 +248,7 @@ namespace cPBPropApp {
 		for (int i = 0; i < UI->MyPgUIBtn.size(); i++) {		//go through buttons again to see if there are any balance-motion-goal-specific buttons that have been clicked
 			if (UI->MyPgUIBtn[i]->isClicked()) {
 				std::string onclick = UI->MyPgUIBtn[i]->getOnClick();
-				cout << "Goal : " << name << " class-specific Button Clicked ID:" << i << "|" << UI->MyPgUIBtn[i]->getLabel() << " onclick = " << onclick << endl;
+				std::cout << "Goal : " << name << " class-specific Button Clicked ID:" << i << "|" << UI->MyPgUIBtn[i]->getLabel() << " onclick = " << onclick << "\n";
 				switch (i) {					
 					default: {return false; }
 				}

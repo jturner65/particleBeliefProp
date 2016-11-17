@@ -47,26 +47,25 @@
 #include <memory>
 #include <thread>
 
-using namespace std;
-using namespace Eigen;
+
 using namespace AaltoGames;
 
 namespace cPBPropApp {
 	CPBPHandler::CPBPHandler(dart::dynamics::SkeletonPtr _skel, dart::simulation::WorldPtr _world, std::shared_ptr<CPBPParams> _cp) :
 		pbp(), cp(_cp), masterSimCntxt(nullptr), main_skel(_skel), main_world(_world), numSimSteps(0), numTotalFrames(0), sampleThreads(0),
-		currEffortLvl(0), stateKernelStd(), numGoals(1), goals(1), numThdsHardware(thread::hardware_concurrency())
+		currEffortLvl(0), stateKernelStd(), numGoals(1), goals(1), numThdsHardware(std::thread::hardware_concurrency())
 	{
 		// std::thread::hardware_ concurrency() function returns the number of threads that can run concurrently for a given execution.
-		cout << "This Machine can handle " << numThdsHardware << " threads without overhead.";
+		std::cout << "This Machine can handle " << numThdsHardware << " threads without overhead.";
 		numThdsHardware = cp->numSamples;		//2x # of native threads
-		cout << " TODO : All " << cp->numSamples << " samples will be spread evenly amongst " << numThdsHardware << " threads." << endl;
+		std::cout << " TODO : All " << cp->numSamples << " samples will be spread evenly amongst " << numThdsHardware << " threads." << "\n";
 
 		numDofs = main_skel->getNumDofs();
 		numCntrl = numDofs - 6;										//ignore root dof control
 		numStateDim = cp->numStateBodies * 6 + 3;						//  w/6 bodies this is  39 : these are vector for up + 6 * # rigid body : 3-vec location and 3-vec velocity
 		numCntrlFlimDim = numCntrl + cp->numCntrlFlim; 				//increased amount for FMAX values (forcelimits), remove 1st 6 dof values ->should be 35
 		initMinMaxAngles();
-		cout << "CPBPHandler Constructor" << endl;
+		std::cout << "CPBPHandler Constructor" << "\n";
 	}
 	CPBPHandler::~CPBPHandler() {}
 
@@ -186,11 +185,11 @@ namespace cPBPropApp {
 
 	void CPBPHandler::initCPBPHandler() {
 		buildMasterCntxt();
-		cout << "CPBPHandler : Master Context built\n";
+		std::cout << "CPBPHandler : Master Context built\n";
 		buildSimCntxts();
-		cout << "CPBPHandler : Sim Contexts built\n";
+		std::cout << "CPBPHandler : Sim Contexts built\n";
 		//buildCntxtLaunchers();
-		cout << "CPBPHandler : Context Launchers Not built - 1 thread per contxt\n";
+		std::cout << "CPBPHandler : Context Launchers Not built - 1 thread per contxt\n";
 	}
 
 	//set up all context-related data
@@ -198,12 +197,12 @@ namespace cPBPropApp {
 		cntxt->cp = cp;
 		if (!isMstr) {
 			Eigen::Vector3d tmpSkelLoc(0, 0, 0);
-			cout << "ID : " << sampID << " Loc : " << tmpSkelLoc(0) << ", " << tmpSkelLoc(1) << ", " << tmpSkelLoc(2) << "\n";
+			std::cout << "ID : " << sampID << " Loc : " << tmpSkelLoc(0) << ", " << tmpSkelLoc(1) << ", " << tmpSkelLoc(2) << "\n";
 			cntxt->skelLocInWorld = tmpSkelLoc;
 		}
 		cntxt->initStateControlVars(numStateDim, numCntrlFlimDim, cp->stateRBIdxs, minAngles, maxAngles, angleRanges);
-		if (cp->flags[cp->IDX_useVelMtr]) { cntxt->setSkelVelJoint(); cout << "use vel motors for cntxt : " << cntxt->name << "\n";}//sets joints to be velocity joints
-		else {								cntxt->setSkelServoJoint(); cout << "use servo motors for cntxt : " << cntxt->name << "\n"; }
+		if (cp->flags[cp->IDX_useVelMtr]) { cntxt->setSkelVelJoint(); std::cout << "use vel motors for cntxt : " << cntxt->name << "\n";}//sets joints to be velocity joints
+		else {								cntxt->setSkelServoJoint(); std::cout << "use servo motors for cntxt : " << cntxt->name << "\n"; }
 		cntxt->initDebugArrays(isMstr);
 	}
 
@@ -217,8 +216,8 @@ namespace cPBPropApp {
 	void CPBPHandler::buildSimCntxts() {
 		std::vector<dart::simulation::WorldPtr> tmpSimWorlds(cp->numSamples);
 		std::vector<std::shared_ptr<SimContext>> tmpSkelCntxts(cp->numSamples);
-		Vector3d gravity(0.0, -9.81, 0.0);
-		stringstream ss;
+		Eigen::Vector3d gravity(0.0, -9.81, 0.0);
+		std::stringstream ss;
 		//dart::dynamics::SkeletonPtr skel;
 		for (int i = 0; i < cp->numSamples; ++i) {																		//1 skel per sample
 			tmpSimWorlds[i] = dart::utils::SkelParser::readWorld(cp->skelFileName);
@@ -259,7 +258,7 @@ namespace cPBPropApp {
 	//}//initCntxtLaunchers
 
 	//currently just have balance goal, TODO add support for multiple, online customizable/modifiable goals
-	void CPBPHandler::buildGoals(int _numGoals, vector<int>& _numSubG) {
+	void CPBPHandler::buildGoals(int _numGoals, std::vector<int>& _numSubG) {
 		numGoals = _numGoals;
 		goals.resize(numGoals);
 		for (int i = 0; i < numGoals; ++i) {
@@ -270,7 +269,7 @@ namespace cPBPropApp {
 		}
 		//add more goals here
 		std::cout << numGoals << (numGoals == 1 ? " Goal made " : " Goals made \n");
-		cout << "CPBPHandler : Goals built\n";
+		std::cout << "CPBPHandler : Goals built\n";
 	}
 
 	//initialize goals to use master context's rest pose as rest pose
@@ -285,7 +284,7 @@ namespace cPBPropApp {
 	//set this pose as rest pose for all walkers, and re-init goals to hold this pose as rest pose
 	//call once, right before first iteration, when main walker hits ground
 	void CPBPHandler::setMasterPoseAsRestState(bool useCurrMstrState) {
-		cout << "Set Master State as Rest State : Use curr Mstr State as Rest State : "<<(useCurrMstrState ? " Yes " : " No ") <<" \n" << masterSimCntxt->buildStateStr_Debug(masterSimCntxt->currState) <<endl;
+		std::cout << "Set Master State as Rest State : Use curr Mstr State as Rest State : "<<(useCurrMstrState ? " Yes " : " No ") <<" \n" << masterSimCntxt->buildStateStr_Debug(masterSimCntxt->currState) <<"\n";
 		if (useCurrMstrState) {
 			masterSimCntxt->getDartSkelState(masterSimCntxt->s, Eigen::Vector3d(0,0,0));
 			masterSimCntxt->setStateAsRestState(masterSimCntxt->currState, false, false);
@@ -314,7 +313,7 @@ namespace cPBPropApp {
 		pbp.init(cp->numSamples, cp->numFwdTimeSteps, numStateDim, numCntrlFlimDim, minControl.data(), maxControl.data(), controlMean.data(), controlPriorStd.data(), controlDiffPriorStd.data(), controlDiffDiffPriorStd.data(), cp->mutationScale, cp->stateKernelScale == 0 ? NULL : stateKernelStd.data());
 		//set further params: portion of "no prior" samples, resampling threshold, whether to use the backwards smoothing pass, and the regularization of the smoothing pass
 		pbp.setParams(cp->uniformBias, cp->resampleThreshold, cp->flags[cp->IDX_useGBP], cp->gbpRegularization);
-		std::cout << "C-PBP Initialized " << std::endl;
+		std::cout << "C-PBP Initialized " << "\n";
 	}
 
 	void CPBPHandler::iterateCPBP() {		//signal the start of new C-PBP iteration
@@ -328,7 +327,7 @@ namespace cPBPropApp {
 		//use currstate (full dof pos/vel) instead?
 		pbp.startIteration(true, masterSimCntxt->PBPState.data());
 		numTotalFrames++;
-		//cout << "start iteration : " <<numTotalFrames<< endl;
+		//std::cout << "start iteration : " <<numTotalFrames<< "\n";
 		//simulate forward 
 		for (int k = 0; k < cp->numFwdTimeSteps; k++) {
 			sampleThreads.clear();
@@ -384,7 +383,7 @@ namespace cPBPropApp {
 		//double bestCost = optSqCost/(1.0*cp->numFwdTimeSteps);
 		int bestIdx = pbp.getBestSampleLastIdx();
 		currEffortLvl = mFwdSimCntxts[bestIdx]->varLevel / (1.0*cp->numFwdTimeSteps);
-		//cout << "OptSqCost : " << optSqCost << " avg cost : " <<bestCost<< " best idx : " << bestIdx << " curr Eff Lvl : " << currEffortLvl << " # fwd prediction steps : "<< cp->numFwdTimeSteps<<"\n";
+		//std::cout << "OptSqCost : " << optSqCost << " avg cost : " <<bestCost<< " best idx : " << bestIdx << " curr Eff Lvl : " << currEffortLvl << " # fwd prediction steps : "<< cp->numFwdTimeSteps<<"\n";
 		currEffortLvl = (currEffortLvl > 0 ? ((currEffortLvl < 1) ? currEffortLvl : 1) : 0);				//must remain bound between 0 and 1
 		pbp.getBestControl(0, masterSimCntxt->control.data());												//put best control in master-context's control vector
 		if (masterSimCntxt->_flags[masterSimCntxt->debug]) {
@@ -426,8 +425,8 @@ namespace cPBPropApp {
 	void CPBPHandler::recompSampleParams() {
 		double t = currEffortLvl,
 			stKernStdVal = 0.5*cp->stateKernelScale;
-		vector<double> currentSds = lerpV4(cp->lowEffortSds, t, cp->highEffortSds);				//currentSds must never be 0 in any dimension
-		vector<double> currFMax = lerpV4(cp->lowEffortFMax, t, cp->highEffortFMax);
+		std::vector<double> currentSds = lerpV4(cp->lowEffortSds, t, cp->highEffortSds);				//currentSds must never be 0 in any dimension
+		std::vector<double> currFMax = lerpV4(cp->lowEffortFMax, t, cp->highEffortFMax);
 
 		cp->posePriorStd = currentSds[0];														
 
@@ -455,19 +454,19 @@ namespace cPBPropApp {
 		for (int i = 0; i < mCntxtLaunchers.size(); ++i) { mCntxtLaunchers[i].reset(); }
 	}
 
-	vector<double> CPBPHandler::accumulateVals() {		return cp->accumulateVals();}//grab all locals that are modifiable by UI or used elsewhere
-	void CPBPHandler::distributeVals(vector<double>& vals) {cp->distributeVals(vals);}
+	std::vector<double> CPBPHandler::accumulateVals() {		return cp->accumulateVals();}//grab all locals that are modifiable by UI or used elsewhere
+	void CPBPHandler::distributeVals(std::vector<double>& vals) {cp->distributeVals(vals);}
 
 	//get values to send to UI
 	void CPBPHandler::sendValsToUI() {
-		vector<double> res = accumulateVals();
+		std::vector<double> res = accumulateVals();
 		for (int i = 0; i < UI->MyPgUISldr.size(); ++i) { UI->MyPgUISldr[i]->setSliderVal((float)(res[i])); }
 		UI->MyPgUIBtn[4]->isChecked = cp->flags[cp->IDX_useGBP];
 	}
 
 	void CPBPHandler::getValsFromUI() {
 		//get all slider vals
-		vector<double> vals;
+		std::vector<double> vals;
 		for (int i = 0; i < UI->MyPgUISldr.size(); ++i) { vals.push_back(UI->MyPgUISldr[i]->getCurValue()); }
 		distributeVals(vals);
 		//sendToContexts(vals);
@@ -475,7 +474,7 @@ namespace cPBPropApp {
 	}
 
 	void CPBPHandler::resetUIWithDefVals() { cp->resetValues();		sendValsToUI(); }
-	void CPBPHandler::saveUIVals() {		cout << "Not implemented yet" << endl;	}//save current settings to disk
+	void CPBPHandler::saveUIVals() {		std::cout << "Not implemented yet" << "\n";	}//save current settings to disk
 
 	void CPBPHandler::buildUI() {
 		//UIObjIdx
@@ -485,9 +484,9 @@ namespace cPBPropApp {
 		const int numSliderCaps = 29;								//# of slider/caption pairs - 1 per data entry value
 
 		int numObjs = numMainBtns + (numSliderCaps * 2) + (numCBox * 2);		//# big buttons + num (caps + sliders) + cap + button for checkboxes //+ 1 for debug caption
-		string buttonNames[numMainBtns] = { string("Set Values"), string("Reset Values"), string("Save Values"), string("Re Init CPBP") };
+		std::string buttonNames[numMainBtns] = { std::string("Set Values"), std::string("Reset Values"), std::string("Save Values"), std::string("Re Init CPBP") };
 
-		string sldrValNamesL[15] = { "Horizon Sec", 
+		std::string sldrValNamesL[15] = { "Horizon Sec",
 			"Leff PosePr Std", "Leff CPr Std", "Leff CDPr Std", "Leff CDDPr Std",							//6
 			"Leff FMax CPr Std", "Leff FMax CDPr Std", "Leff FMax CDDPr Std",											//13
 			"Resample Thresh", "Uniform Bias", "GPB Reg", "Base Std Scale",		//26
@@ -504,7 +503,7 @@ namespace cPBPropApp {
 			.999, .9999, .9999, 10,
 			50, 50, 50 };
 
-		string sldrValNamesR[14] = { "Timestep", 
+		std::string sldrValNamesR[14] = { "Timestep",
 			"Heff PosePr Std", "Heff CPr Std", "Heff CDPr Std", "Heff CDDPr Std",						
 			"Heff FMax CPr Std", "Heff FMax CDPr Std", "Heff FMax CDDPr Std",							
 			"Jerk Std", "Motor Fmax", "Ctrl Mut Std", 
@@ -523,47 +522,47 @@ namespace cPBPropApp {
 			100, 75, 10};
 
 		UI->numObjs += numObjs;								//# of ui objects
-		vector<int> objType;								//what type each object is : 0 : button, 1 : slider, 2 : caption, 3 : textbox
-		vector<string> objLabels;							//object labels
-		vector<vector<int>> objXY_WH;
-		vector<vector<float>> objClr;
+		std::vector<int> objType;								//what type each object is : 0 : button, 1 : slider, 2 : caption, 3 : textbox
+		std::vector<std::string> objLabels;							//object labels
+		std::vector<std::vector<int>> objXY_WH;
+		std::vector<std::vector<float>> objClr;
 
 		objType.resize(numObjs);								//what type each object is : 0 : button, 1 : slider, 2 : caption, 3 : textbox
 		objXY_WH.resize(numObjs);
 		objLabels.resize(numObjs);
 		objClr.resize(numObjs);
 		int idx = 0;
-		stringstream ss;
+		std::stringstream ss;
 		float initY = 10, _stOff = 10, sliderLen = 20, sliderWide = 15, widBuf = 48, hWidBuf = widBuf*.5f, qWidBuf = widBuf*.25f, tqWidBuf = hWidBuf + qWidBuf, col2 = UI->sldrBarLen + sliderLen + _stOff + _stOff,
 			capWide = 30, yBuffer1 = widBuf + capWide, btnWide = col2, btnHigh = 25, btnBuf = 5, stY = initY + (tqWidBuf*numSliderCaps*.5f) + hWidBuf, wTBDisp = btnWide + btnBuf, hTBDisp = btnHigh + btnBuf;
 		for (int i = 0; i < 2; ++i) {
 			ss.str("");		ss << buttonNames[i];
-			vector<float> v1 = { i*wTBDisp, stY, btnWide, btnHigh, .75f, .75f, .75f, 1 };
+			std::vector<float> v1 = { i*wTBDisp, stY, btnWide, btnHigh, .75f, .75f, .75f, 1 };
 			UI->initUIObj(idx++, ss.str(), 0, v1, objType, objLabels, objXY_WH, objClr);
 			ss.str("");		ss << buttonNames[i + 2];
-			vector<float> v2 = { i*wTBDisp, stY + hTBDisp, btnWide, btnHigh, .75f, .75f, .75f, 1 };
+			std::vector<float> v2 = { i*wTBDisp, stY + hTBDisp, btnWide, btnHigh, .75f, .75f, .75f, 1 };
 			UI->initUIObj(idx++, ss.str(), 0, v2, objType, objLabels, objXY_WH, objClr);
 		}
 
 		for (int i = 0; i < 15; ++i) {
-			vector<float> v1 = { _stOff+qWidBuf, initY + (tqWidBuf*i), sliderWide, sliderLen, .85f, .85f, .85f, 1 };
+			std::vector<float> v1 = { _stOff+qWidBuf, initY + (tqWidBuf*i), sliderWide, sliderLen, .85f, .85f, .85f, 1 };
 			UI->initUIObj(idx++, "", 1, v1, objType, objLabels, objXY_WH, objClr);
 			ss.str("");		ss << sldrValNamesL[i];
-			vector<float> v2 = { _stOff + hWidBuf, initY + (tqWidBuf*i) + capWide, capWide, capWide, .25f, .25f, .25f, 1 };
+			std::vector<float> v2 = { _stOff + hWidBuf, initY + (tqWidBuf*i) + capWide, capWide, capWide, .25f, .25f, .25f, 1 };
 			UI->initUIObj(idx++, ss.str(), 2, v2, objType, objLabels, objXY_WH, objClr);
 			if (i == 14) { 
 				ss.str("");		ss << "Enable";
-				vector<float> vb = { _stOff + col2 + sliderWide, initY + (tqWidBuf*i), sliderLen, sliderLen, .75f, .75f, .75f, 1 };
+				std::vector<float> vb = { _stOff + col2 + sliderWide, initY + (tqWidBuf*i), sliderLen, sliderLen, .75f, .75f, .75f, 1 };
 				UI->initUIObj(idx++, ss.str(), 0, vb, objType, objLabels, objXY_WH, objClr);
 				ss.str("");		ss << "Enable Gaussian Back Prop ";
-				vector<float> vCap = { _stOff + col2 + sliderWide + hWidBuf, _stOff + initY + (tqWidBuf*i), capWide, capWide, .25f, .25f, .25f, 1 };
+				std::vector<float> vCap = { _stOff + col2 + sliderWide + hWidBuf, _stOff + initY + (tqWidBuf*i), capWide, capWide, .25f, .25f, .25f, 1 };
 				UI->initUIObj(idx++, ss.str(), 2, vCap, objType, objLabels, objXY_WH, objClr);
 			}
 			else {
-				vector<float> v3 = { _stOff + col2 + sliderWide, initY + (tqWidBuf*i), sliderWide, sliderLen, .85f, .85f, .85f, 1 };
+				std::vector<float> v3 = { _stOff + col2 + sliderWide, initY + (tqWidBuf*i), sliderWide, sliderLen, .85f, .85f, .85f, 1 };
 				UI->initUIObj(idx++, "", 1, v3, objType, objLabels, objXY_WH, objClr);
 				ss.str("");		ss << sldrValNamesR[i];
-				vector<float> v4 = { _stOff + col2 + sliderWide + qWidBuf, initY + (tqWidBuf*i) + capWide, capWide, capWide, .25f, .25f, .25f, 1 };
+				std::vector<float> v4 = { _stOff + col2 + sliderWide + qWidBuf, initY + (tqWidBuf*i) + capWide, capWide, capWide, .25f, .25f, .25f, 1 };
 				UI->initUIObj(idx++, ss.str(), 2, v4, objType, objLabels, objXY_WH, objClr);
 			}
 		}
@@ -595,7 +594,7 @@ namespace cPBPropApp {
 	}
 	
 	void CPBPHandler::reinitCPBP() {//reset skeletons to initial hit-the-ground state, reset cpbp - use new values
-		vector<double> vals;
+		std::vector<double> vals;
 		for (int i = 0; i < UI->MyPgUISldr.size(); ++i) { vals.push_back(UI->MyPgUISldr[i]->getCurValue()); }
 		double newDelT = vals[1], newPredHoriz = vals[0];
 		distributeVals(vals);
@@ -621,7 +620,7 @@ namespace cPBPropApp {
 		for (int i = 0; i < UI->MyPgUIBtn.size(); i++) {
 			if (UI->MyPgUIBtn[i]->isClicked()) {
 				std::string onclick = UI->MyPgUIBtn[i]->getOnClick();
-				cout << "Button Clicked ID:" << i << "|" << UI->MyPgUIBtn[i]->getLabel() << " onclick = " << onclick << endl;
+				std::cout << "Button Clicked ID:" << i << "|" << UI->MyPgUIBtn[i]->getLabel() << " onclick = " << onclick << "\n";
 				switch (i) {
 					case 0: {getValsFromUI(); return true; }//"Send Values to handler from UI",
 					case 1: {saveUIVals(); return true; }//"Save Values",

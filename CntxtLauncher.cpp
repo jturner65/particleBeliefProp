@@ -34,7 +34,6 @@
 *   POSSIBILITY OF SUCH DAMAGE.
 */
 #include "CntxtLauncher.h"
-using namespace std;
 namespace cPBPropApp {
 
 	CntxtLauncher::CntxtLauncher(std::vector<std::shared_ptr<SimContext>>& _cntxtList, int _numCntxts):cntxtList(_cntxtList), numCntxts(_numCntxts) {	}
